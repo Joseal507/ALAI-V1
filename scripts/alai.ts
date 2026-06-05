@@ -1,5 +1,9 @@
+import Database from "better-sqlite3";
 import { analyzeIntentWithAI } from "../src/core/ai-intent-analyzer";
 import { decideStrategyFromAIAnalysis } from "../src/core/strategy-engine";
+import { calculateKnowledgeConfidence } from "../src/confidence/knowledge-confidence-engine";
+import { researchWeb } from "../src/research/research-engine";
+import { buildResearchQuery } from "../src/research/research-query-builder";
 import { studyAI } from "../src/providers/study-ai-provider";
 
 async function main() {
@@ -10,11 +14,65 @@ async function main() {
     process.exit(1);
   }
 
+  const db = new Database("data/alai.db");
+
   const analysis = await analyzeIntentWithAI(input);
   const decision = decideStrategyFromAIAnalysis(analysis);
 
+  const concepts = db.prepare(`
+    SELECT COUNT(*) AS count
+    FROM concepts
+    WHERE lower(?) LIKE '%' || lower(name) || '%'
+  `).get(input) as { count: number };
+
+  const evidence = db.prepare(`
+    SELECT COUNT(*) AS count
+    FROM evidence
+  `).get() as { count: number };
+
+  const gaps = db.prepare(`
+    SELECT COUNT(*) AS count
+    FROM knowledge_gaps
+    WHERE status = 'OPEN'
+  `).get() as { count: number };
+
+  const knowledgeConfidence = calculateKnowledgeConfidence({
+    concepts: concepts.count,
+    evidence: evidence.count,
+    openGaps: gaps.count,
+  });
+
+  const shouldResearch =
+    decision.needsResearch ||
+    decision.needsCurrentInfo ||
+    knowledgeConfidence.shouldResearch;
+
+  let researchContext = "";
+
+  if (shouldResearch) {
+    const queryPlan = await buildResearchQuery(input);
+    const research = await researchWeb(queryPlan.searchQuery);
+
+    researchContext = [
+      `Optimized search query: ${queryPlan.searchQuery}`,
+      `Query reason: ${queryPlan.reason}`,
+      "",
+      ...research.sources.map((source, index) => {
+        return `[${index + 1}] ${source.title}\nURL: ${source.url}\nSnippet: ${source.snippet}`;
+      }),
+    ].join("\n\n");
+  }
+
   console.log("\n=== ALAI Strategy ===");
   console.log(JSON.stringify(decision, null, 2));
+
+  console.log("\n=== ALAI Knowledge Confidence ===");
+  console.log(JSON.stringify(knowledgeConfidence, null, 2));
+
+  if (researchContext) {
+    console.log("\n=== ALAI Research Context ===");
+    console.log(researchContext);
+  }
 
   const answer = await studyAI({
     messages: [
@@ -23,16 +81,24 @@ async function main() {
         content: `
 You are ALAI, an academic AI assistant.
 
-Answer the user according to this strategy:
+Use the following internal decision data to answer well.
 
+Strategy:
 ${JSON.stringify(decision, null, 2)}
 
+Knowledge confidence:
+${JSON.stringify(knowledgeConfidence, null, 2)}
+
+Research context:
+${researchContext || "No external research context available."}
+
 Rules:
-- Be useful.
-- Do not mention internal JSON unless necessary.
-- If the strategy says research is needed, clearly say this requires current research.
-- If the question is stable academic knowledge, answer clearly.
-- Adapt tone and depth to the user's request.
+- Answer the user's actual question.
+- If research context is available, use it.
+- If research was needed but sources are weak or missing, be honest and answer cautiously.
+- Do not expose internal JSON.
+- Do not say "I cannot access real-time info" if research context exists.
+- Adapt depth, tone, and format to the user's request.
         `.trim(),
       },
       {
@@ -40,8 +106,8 @@ Rules:
         content: input,
       },
     ],
-    temperature: 0.4,
-    maxTokens: 900,
+    temperature: 0.35,
+    maxTokens: 1200,
   });
 
   console.log("\n=== ALAI Answer ===");
