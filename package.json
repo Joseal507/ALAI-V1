@@ -1,0 +1,28 @@
+{
+  "name": "alai-brain",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "typecheck": "tsc --noEmit",
+    "db:init": "tsx scripts/init-db.ts",
+    "db:seed": "tsx scripts/seed-world-model.ts",
+    "db:inspect": "tsx scripts/inspect-world-model.ts",
+    "learn:intake": "tsx scripts/intake-text.ts",
+    "learn:events": "tsx scripts/inspect-learning-events.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^25.9.1",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.10.0"
+  }
+}
