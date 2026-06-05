@@ -25,6 +25,7 @@ const conceptIds = matchedConceptRows.map((row) => row.id);
 
 let evidenceCount = 0;
 let openGapCount = 0;
+let capabilityCount = 0;
 
 if (conceptIds.length > 0) {
   const placeholders = conceptIds.map(() => "?").join(",");
@@ -45,14 +46,24 @@ if (conceptIds.length > 0) {
   `).get(...conceptIds) as { count: number };
 
   openGapCount = gapRow.count;
+
+  const capabilityRow = db.prepare(`
+    SELECT COUNT(*) AS count
+    FROM capabilities
+    WHERE concept_id IN (${placeholders})
+  `).get(...conceptIds) as { count: number };
+
+  capabilityCount = capabilityRow.count;
 } else {
   openGapCount = 0;
+  capabilityCount = 0;
 }
 
 const result = calculateKnowledgeConfidence({
   concepts: matchedConceptRows.length,
   evidence: evidenceCount,
   openGaps: openGapCount,
+  capabilities: capabilityCount,
 });
 
 console.log("\n=== ALAI Knowledge Confidence ===");

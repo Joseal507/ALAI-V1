@@ -2,7 +2,7 @@ import Database from "better-sqlite3";
 import crypto from "node:crypto";
 import { analyzeIntentWithAI } from "../src/core/ai-intent-analyzer";
 import { decideStrategyFromAIAnalysis } from "../src/core/strategy-engine";
-import { calculateKnowledgeConfidence } from "../src/confidence/knowledge-confidence-engine";
+import { calculateKnowledgeConfidenceFromDb } from "../src/confidence/knowledge-confidence-from-db";
 import { researchWeb } from "../src/research/research-engine";
 import { buildResearchQuery } from "../src/research/research-query-builder";
 import { studyAI } from "../src/providers/study-ai-provider";
@@ -20,28 +20,7 @@ async function main() {
   const analysis = await analyzeIntentWithAI(input);
   const decision = decideStrategyFromAIAnalysis(analysis);
 
-  const concepts = db.prepare(`
-    SELECT COUNT(*) AS count
-    FROM concepts
-    WHERE lower(?) LIKE '%' || lower(name) || '%'
-  `).get(input) as { count: number };
-
-  const evidence = db.prepare(`
-    SELECT COUNT(*) AS count
-    FROM evidence
-  `).get() as { count: number };
-
-  const gaps = db.prepare(`
-    SELECT COUNT(*) AS count
-    FROM knowledge_gaps
-    WHERE status = 'OPEN'
-  `).get() as { count: number };
-
-  const knowledgeConfidence = calculateKnowledgeConfidence({
-    concepts: concepts.count,
-    evidence: evidence.count,
-    openGaps: gaps.count,
-  });
+  const knowledgeConfidence = calculateKnowledgeConfidenceFromDb(db, input);
 
   const shouldResearch =
     decision.needsResearch ||

@@ -24,7 +24,8 @@
     "confidence:test": "tsx scripts/confidence-test.ts",
     "learn:evidence": "tsx scripts/learn-from-evidence.ts",
     "alias:add": "tsx scripts/add-alias.ts",
-    "evidence:link": "tsx scripts/link-evidence.ts"
+    "evidence:link": "tsx scripts/link-evidence.ts",
+    "capability:add": "tsx scripts/add-capability.ts"
   },
   "keywords": [],
   "author": "",
