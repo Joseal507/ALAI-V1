@@ -138,6 +138,34 @@ CREATE TABLE IF NOT EXISTS language_feedback (
 
 CREATE INDEX IF NOT EXISTS idx_language_patterns_type ON language_patterns(pattern_type);
 CREATE INDEX IF NOT EXISTS idx_language_patterns_instruction ON language_patterns(instruction);
+
+CREATE TABLE IF NOT EXISTS language_skills (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  skill_type TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  confidence_score REAL NOT NULL DEFAULT 0.25,
+  usage_count INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS language_skill_relations (
+  id TEXT PRIMARY KEY,
+  from_skill_id TEXT NOT NULL,
+  to_skill_id TEXT NOT NULL,
+  relation_type TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  confidence_score REAL NOT NULL DEFAULT 0.25,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  FOREIGN KEY (from_skill_id) REFERENCES language_skills(id) ON DELETE CASCADE,
+  FOREIGN KEY (to_skill_id) REFERENCES language_skills(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_language_skills_name ON language_skills(name);
+CREATE INDEX IF NOT EXISTS idx_language_skill_relations_from ON language_skill_relations(from_skill_id);
+CREATE INDEX IF NOT EXISTS idx_language_skill_relations_to ON language_skill_relations(to_skill_id);
 `);
 
 console.log("ALAI database initialized at data/alai.db");

@@ -11,6 +11,7 @@ import { buildInternalKnowledgeContext } from "../src/retrieval/context-builder"
 import { reasonAboutQuestion, buildQuestionReasoningContext } from "../src/reasoning/question-reasoner";
 import { retrieveLanguagePatterns, buildLanguagePatternContext } from "../src/language/language-learning-engine";
 import { renderInternalAnswerWithLanguagePatterns } from "../src/language/internal-language-renderer";
+import { retrieveLanguageSkillContext, buildLanguageSkillContextText } from "../src/language/language-skill-retriever";
 import { buildAnswerPlan, renderAnswerPlan } from "../src/reasoning/answer-planner";
 
 async function main() {
@@ -31,6 +32,8 @@ async function main() {
   const answerPlan = buildAnswerPlan(input, retrievedKnowledge, questionReasoning);
   const languagePatterns = retrieveLanguagePatterns(db, input);
   const languagePatternContext = buildLanguagePatternContext(languagePatterns);
+  const languageSkillContext = retrieveLanguageSkillContext(db, input);
+  const languageSkillContextText = buildLanguageSkillContextText(languageSkillContext);
 
   if (
     answerPlan.canAnswerInternally &&
@@ -53,6 +56,9 @@ async function main() {
 
     console.log("\n=== ALAI Language Pattern Context ===");
     console.log(languagePatternContext);
+
+    console.log("\n=== ALAI Language Skill Context ===");
+    console.log(languageSkillContextText);
 
     console.log("\n=== ALAI Answer ===");
     console.log(renderInternalAnswerWithLanguagePatterns(answerPlan, languagePatterns));
@@ -134,6 +140,9 @@ async function main() {
   console.log("\n=== ALAI Language Pattern Context ===");
   console.log(languagePatternContext);
 
+  console.log("\n=== ALAI Language Skill Context ===");
+  console.log(languageSkillContextText);
+
   if (researchContext) {
     console.log("\n=== ALAI Research Context ===");
     console.log(researchContext);
@@ -166,6 +175,9 @@ ${JSON.stringify(answerPlan, null, 2)}
 
 Learned language patterns:
 ${languagePatternContext}
+
+Language skill graph:
+${languageSkillContextText}
 
 Research context:
 ${researchContext || "No external research context available."}
