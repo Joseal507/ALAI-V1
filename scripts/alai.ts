@@ -61,7 +61,7 @@ async function main() {
     console.log(languageSkillContextText);
 
     console.log("\n=== ALAI Answer ===");
-    console.log(renderInternalAnswerWithLanguagePatterns(answerPlan, languagePatterns));
+    console.log(renderInternalAnswerWithLanguagePatterns(answerPlan, languagePatterns, languageSkillContext));
     return;
   }
 

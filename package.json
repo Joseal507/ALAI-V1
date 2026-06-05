@@ -51,7 +51,8 @@
     "graph:explain": "tsx scripts/explain-graph.ts",
     "language:learn": "tsx scripts/learn-language-pattern.ts",
     "language:feedback": "tsx scripts/learn-language-feedback.ts",
-    "language:seed-skills": "tsx scripts/seed-language-skills.ts"
+    "language:seed-skills": "tsx scripts/seed-language-skills.ts",
+    "language:seed-ontology": "tsx scripts/seed-language-ontology.ts"
   },
   "keywords": [],
   "author": "",

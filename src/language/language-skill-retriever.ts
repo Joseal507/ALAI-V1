@@ -32,7 +32,14 @@ function inferRelevantSkillNames(instruction: string): string[] {
     skills.add("summarize");
   }
 
-  if (/(más|detall|profund|expand|alarga)/.test(text)) {
+  const asksForShorter = /(corto|breve|resum|short|menos largo)/.test(text);
+  const asksForCasual = /(casual|relajado|conmigo|normal|vaina)/.test(text);
+
+  if (
+    /(detall|profund|expand|alarga|más completo|explica más)/.test(text) &&
+    !asksForShorter &&
+    !asksForCasual
+  ) {
     skills.add("expand");
   }
 

@@ -1,22 +1,55 @@
 import type { AnswerPlan } from "../reasoning/answer-planner";
 import type { LearnedLanguagePattern } from "./language-learning-engine";
+import type { LanguageSkillContext } from "./language-skill-retriever";
 
 function hasPattern(patterns: LearnedLanguagePattern[], type: string): boolean {
   return patterns.some((pattern) => pattern.patternType === type);
 }
 
-function prefersCasual(patterns: LearnedLanguagePattern[]): boolean {
-  return patterns.some((pattern) =>
-    pattern.styleSummary.toLowerCase().includes("casual")
+function hasSkill(skillContext: LanguageSkillContext | undefined, name: string): boolean {
+  return Boolean(skillContext?.skills.some((skill) => skill.name === name));
+}
+
+function hasSkillRelation(
+  skillContext: LanguageSkillContext | undefined,
+  from: string,
+  relationType: string,
+  to: string
+): boolean {
+  return Boolean(
+    skillContext?.relations.some(
+      (relation) =>
+        relation.fromSkill === from &&
+        relation.relationType === relationType &&
+        relation.toSkill === to
+    )
   );
 }
 
-function prefersShort(patterns: LearnedLanguagePattern[]): boolean {
-  return hasPattern(patterns, "LENGTH_CONTROL");
+function prefersCasual(
+  patterns: LearnedLanguagePattern[],
+  skillContext?: LanguageSkillContext
+): boolean {
+  return (
+    hasSkill(skillContext, "casual_tone") ||
+    patterns.some((pattern) => pattern.styleSummary.toLowerCase().includes("casual"))
+  );
 }
 
-function prefersParaphraseOrUserVoice(patterns: LearnedLanguagePattern[]): boolean {
+function prefersShort(
+  patterns: LearnedLanguagePattern[],
+  skillContext?: LanguageSkillContext
+): boolean {
+  return hasSkill(skillContext, "summarize") || hasPattern(patterns, "LENGTH_CONTROL");
+}
+
+function prefersParaphraseOrUserVoice(
+  patterns: LearnedLanguagePattern[],
+  skillContext?: LanguageSkillContext
+): boolean {
   return (
+    hasSkill(skillContext, "user_voice") ||
+    hasSkill(skillContext, "paraphrase") ||
     hasPattern(patterns, "PARAPHRASE") ||
     hasPattern(patterns, "PERSONA_MATCH") ||
     patterns.some((pattern) => pattern.styleSummary.toLowerCase().includes("user's voice"))
@@ -25,25 +58,48 @@ function prefersParaphraseOrUserVoice(patterns: LearnedLanguagePattern[]): boole
 
 export function renderInternalAnswerWithLanguagePatterns(
   plan: AnswerPlan,
-  patterns: LearnedLanguagePattern[]
+  patterns: LearnedLanguagePattern[],
+  skillContext?: LanguageSkillContext
 ): string {
   if (!plan.canAnswerInternally) {
     return "ALAI does not have enough internal graph knowledge to answer confidently without an external model.";
   }
 
-  const casual = prefersCasual(patterns);
-  const short = prefersShort(patterns);
-  const userVoice = prefersParaphraseOrUserVoice(patterns);
+  const casual = prefersCasual(patterns, skillContext);
+  const short = prefersShort(patterns, skillContext);
+  const userVoice = prefersParaphraseOrUserVoice(patterns, skillContext);
+
+  const mustPreserveMeaning =
+    hasSkillRelation(skillContext, "summarize", "REQUIRES", "preserve_core_meaning") ||
+    hasSkillRelation(skillContext, "summarize", "REQUIRES", "preserve_main_idea") ||
+    hasSkillRelation(skillContext, "paraphrase", "REQUIRES", "preserve_main_idea");
+
+  const shouldSimplify =
+    hasSkill(skillContext, "simplify") ||
+    hasSkillRelation(skillContext, "casual_tone", "OFTEN_USES", "simplify");
+
+  const shouldReduceLength =
+    hasSkillRelation(skillContext, "summarize", "USES", "reduce_sentence_length");
+
+  const shouldRemoveRedundantDetail =
+    hasSkillRelation(skillContext, "summarize", "USES", "remove_redundant_detail");
 
   const examplePattern = patterns.find((pattern) => pattern.outputExample.trim().length > 0);
-  const main = examplePattern
+  const base = examplePattern
     ? adaptExampleToPlan(examplePattern.outputExample, plan)
     : plan.conclusion;
 
+  const main = applyLanguageSkills(base, {
+    shouldSimplify,
+    shouldReduceLength,
+    shouldRemoveRedundantDetail,
+    mustPreserveMeaning,
+  });
+
   if (short && casual) {
     return [
-      userVoice ? "En corto:" : "Short version:",
-      simplifySentence(main),
+      userVoice ? "En corto:" : "En corto:",
+      main,
       "",
       `Confianza interna: ${plan.confidence}`,
     ].join("\n");
@@ -51,18 +107,18 @@ export function renderInternalAnswerWithLanguagePatterns(
 
   if (short) {
     return [
-      simplifySentence(main),
+      main,
       "",
-      `Internal confidence: ${plan.confidence}`,
+      `Confianza interna: ${plan.confidence}`,
     ].join("\n");
   }
 
   if (casual) {
     return [
-      userVoice ? "Básicamente:" : "Basically:",
-      simplifySentence(main),
+      userVoice ? "Básicamente:" : "Básicamente:",
+      main,
       "",
-      "How ALAI knows:",
+      "Cómo lo sabe ALAI:",
       ...plan.reasoningSteps.slice(0, 2).map((step) => `- ${simplifyReasoning(step)}`),
       "",
       `Confianza interna: ${plan.confidence}`,
@@ -79,13 +135,72 @@ export function renderInternalAnswerWithLanguagePatterns(
   ].join("\n");
 }
 
+function applyLanguageSkills(
+  value: string,
+  options: {
+    shouldSimplify: boolean;
+    shouldReduceLength: boolean;
+    shouldRemoveRedundantDetail: boolean;
+    mustPreserveMeaning: boolean;
+  }
+): string {
+  let output = value.trim();
+
+  if (options.shouldSimplify) {
+    output = simplifySentence(output);
+  }
+
+  if (options.shouldRemoveRedundantDetail) {
+    output = removeRedundantDetail(output);
+  }
+
+  if (options.shouldReduceLength) {
+    output = reduceSentenceLength(output);
+  }
+
+  if (options.mustPreserveMeaning && output.length === 0) {
+    return value.trim();
+  }
+
+  return output.trim();
+}
+
 function simplifySentence(value: string): string {
   return value
     .replace("In physics terms, ", "")
-    .replace("net torque equals the time derivative of angular momentum", "torque is what changes angular momentum")
-    .replace("so applying torque changes the magnitude or direction of angular momentum", "so torque can make spinning motion change")
+    .replace("net torque equals the time derivative of angular momentum", "torque changes angular momentum")
+    .replace("so applying torque changes the magnitude or direction of angular momentum", "so torque can change how something spins")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function removeRedundantDetail(value: string): string {
+  const sentences = value
+    .split(/(?<=[.!?])\s+/)
+    .map((sentence) => sentence.trim())
+    .filter(Boolean);
+
+  const seen = new Set<string>();
+  const result: string[] = [];
+
+  for (const sentence of sentences) {
+    const key = sentence.toLowerCase().replace(/[^a-záéíóúñ0-9 ]/gi, "");
+
+    if (seen.has(key)) continue;
+
+    seen.add(key);
+    result.push(sentence);
+  }
+
+  return result.join(" ");
+}
+
+function reduceSentenceLength(value: string): string {
+  const firstSentence = value.split(/(?<=[.!?])\s+/)[0]?.trim();
+
+  if (!firstSentence) return value.trim();
+
+  return firstSentence.endsWith(".") ? firstSentence : `${firstSentence}.`;
 }
 
 function simplifyReasoning(value: string): string {
@@ -96,7 +211,6 @@ function simplifyReasoning(value: string): string {
     .replace(/\s+/g, " ")
     .trim();
 }
-
 
 function adaptExampleToPlan(example: string, plan: AnswerPlan): string {
   const cleaned = example.trim();
