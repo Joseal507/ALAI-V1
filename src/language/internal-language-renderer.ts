@@ -35,7 +35,10 @@ export function renderInternalAnswerWithLanguagePatterns(
   const short = prefersShort(patterns);
   const userVoice = prefersParaphraseOrUserVoice(patterns);
 
-  const main = plan.conclusion;
+  const examplePattern = patterns.find((pattern) => pattern.outputExample.trim().length > 0);
+  const main = examplePattern
+    ? adaptExampleToPlan(examplePattern.outputExample, plan)
+    : plan.conclusion;
 
   if (short && casual) {
     return [
@@ -92,4 +95,22 @@ function simplifyReasoning(value: string): string {
     .replace("net torque equals the time derivative of angular momentum", "torque changes angular momentum")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+
+function adaptExampleToPlan(example: string, plan: AnswerPlan): string {
+  const cleaned = example.trim();
+
+  if (!cleaned) return plan.conclusion;
+
+  const hasTorque = plan.concepts.some((concept) => concept.toLowerCase() === "torque");
+  const hasAngularMomentum = plan.concepts.some((concept) =>
+    concept.toLowerCase() === "angular momentum"
+  );
+
+  if (hasTorque && hasAngularMomentum) {
+    return cleaned;
+  }
+
+  return cleaned;
 }

@@ -108,9 +108,45 @@ export function learnLanguagePattern(
       UPDATE language_patterns
       SET confidence_score = ?,
           usage_count = usage_count + 1,
+          input_example = CASE
+            WHEN ? != '' THEN ?
+            ELSE input_example
+          END,
+          output_example = CASE
+            WHEN ? != '' THEN ?
+            ELSE output_example
+          END,
           updated_at = ?
       WHERE id = ?
-    `).run(nextConfidence, now, existing.id);
+    `).run(
+      nextConfidence,
+      input.previousResponse || "",
+      input.previousResponse || "",
+      input.improvedResponse || "",
+      input.improvedResponse || "",
+      now,
+      existing.id
+    );
+
+    db.prepare(`
+      INSERT INTO language_feedback (
+        id,
+        user_instruction,
+        previous_response,
+        improved_response,
+        feedback_summary,
+        learned_pattern_id,
+        created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      crypto.randomUUID(),
+      input.userInstruction,
+      input.previousResponse || "",
+      input.improvedResponse || "",
+      styleSummary,
+      existing.id,
+      now
+    );
 
     return {
       ...existing,
