@@ -1,6 +1,7 @@
 import type { AnswerPlan } from "../reasoning/answer-planner";
 import type { LearnedLanguagePattern } from "./language-learning-engine";
 import type { LanguageSkillContext } from "./language-skill-retriever";
+import type { DetectedLanguage } from "./language-detector";
 
 function hasPattern(patterns: LearnedLanguagePattern[], type: string): boolean {
   return patterns.some((pattern) => pattern.patternType === type);
@@ -59,7 +60,8 @@ function prefersParaphraseOrUserVoice(
 export function renderInternalAnswerWithLanguagePatterns(
   plan: AnswerPlan,
   patterns: LearnedLanguagePattern[],
-  skillContext?: LanguageSkillContext
+  skillContext?: LanguageSkillContext,
+  outputLanguage: DetectedLanguage = "unknown"
 ): string {
   if (!plan.canAnswerInternally) {
     return "ALAI does not have enough internal graph knowledge to answer confidently without an external model.";
@@ -98,10 +100,12 @@ export function renderInternalAnswerWithLanguagePatterns(
 
   if (short && casual) {
     return [
-      userVoice ? "En corto:" : "En corto:",
+      outputLanguage === "es" ? "En corto:" : "Short version:",
       main,
       "",
-      `Confianza interna: ${plan.confidence}`,
+      outputLanguage === "es"
+        ? `Confianza interna: ${plan.confidence}`
+        : `Internal confidence: ${plan.confidence}`,
     ].join("\n");
   }
 
@@ -109,19 +113,23 @@ export function renderInternalAnswerWithLanguagePatterns(
     return [
       main,
       "",
-      `Confianza interna: ${plan.confidence}`,
+      outputLanguage === "es"
+        ? `Confianza interna: ${plan.confidence}`
+        : `Internal confidence: ${plan.confidence}`,
     ].join("\n");
   }
 
   if (casual) {
     return [
-      userVoice ? "Básicamente:" : "Básicamente:",
+      outputLanguage === "es" ? "Básicamente:" : "Basically:",
       main,
       "",
-      "Cómo lo sabe ALAI:",
+      outputLanguage === "es" ? "Cómo lo sabe ALAI:" : "How ALAI knows:",
       ...plan.reasoningSteps.slice(0, 2).map((step) => `- ${simplifyReasoning(step)}`),
       "",
-      `Confianza interna: ${plan.confidence}`,
+      outputLanguage === "es"
+        ? `Confianza interna: ${plan.confidence}`
+        : `Internal confidence: ${plan.confidence}`,
     ].join("\n");
   }
 

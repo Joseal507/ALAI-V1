@@ -12,6 +12,7 @@ import { reasonAboutQuestion, buildQuestionReasoningContext } from "../src/reaso
 import { retrieveLanguagePatterns, buildLanguagePatternContext } from "../src/language/language-learning-engine";
 import { renderInternalAnswerWithLanguagePatterns } from "../src/language/internal-language-renderer";
 import { retrieveLanguageSkillContext, buildLanguageSkillContextText } from "../src/language/language-skill-retriever";
+import { preferredOutputLanguage } from "../src/language/language-detector";
 import { buildAnswerPlan, renderAnswerPlan } from "../src/reasoning/answer-planner";
 
 async function main() {
@@ -34,6 +35,7 @@ async function main() {
   const languagePatternContext = buildLanguagePatternContext(languagePatterns);
   const languageSkillContext = retrieveLanguageSkillContext(db, input);
   const languageSkillContextText = buildLanguageSkillContextText(languageSkillContext);
+  const outputLanguage = preferredOutputLanguage(input);
 
   if (
     answerPlan.canAnswerInternally &&
@@ -61,7 +63,7 @@ async function main() {
     console.log(languageSkillContextText);
 
     console.log("\n=== ALAI Answer ===");
-    console.log(renderInternalAnswerWithLanguagePatterns(answerPlan, languagePatterns, languageSkillContext));
+    console.log(renderInternalAnswerWithLanguagePatterns(answerPlan, languagePatterns, languageSkillContext, outputLanguage));
     return;
   }
 
