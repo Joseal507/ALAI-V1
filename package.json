@@ -33,7 +33,9 @@
     "consolidation:aliases": "tsx scripts/consolidation-apply-aliases.ts",
     "consolidation:merge-force": "tsx scripts/consolidation-merge-force.ts",
     "relations:dedupe": "tsx scripts/dedupe-relations.ts",
-    "relations:prune-alias": "tsx scripts/prune-alias-relations.ts"
+    "relations:prune-alias": "tsx scripts/prune-alias-relations.ts",
+    "autonomy:plan": "tsx scripts/autonomy-plan.ts",
+    "autonomy:run": "tsx scripts/autonomy-run.ts"
   },
   "keywords": [],
   "author": "",
