@@ -48,7 +48,8 @@
     "concepts:strengthen-related": "tsx scripts/strengthen-related-concepts.ts",
     "autonomy:full": "tsx scripts/autonomy-full.ts",
     "reason:graph": "tsx scripts/reason-graph.ts",
-    "graph:explain": "tsx scripts/explain-graph.ts"
+    "graph:explain": "tsx scripts/explain-graph.ts",
+    "language:learn": "tsx scripts/learn-language-pattern.ts"
   },
   "keywords": [],
   "author": "",

@@ -11,7 +11,8 @@ export function buildInternalKnowledgeContext(
     for (const concept of context.concepts) {
       parts.push(
         `- ${concept.name}: ${concept.description} ` +
-        `(confidence=${concept.confidenceScore}, uncertainty=${concept.uncertaintyScore})`
+        `(confidence=${concept.confidenceScore}, uncertainty=${concept.uncertaintyScore}, ` +
+        `matchScore=${concept.matchScore}, matchReason=${concept.matchReason})`
       );
     }
   }

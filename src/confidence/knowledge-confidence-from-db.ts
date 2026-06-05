@@ -28,11 +28,11 @@ export function calculateKnowledgeConfidenceFromDb(
   let matchMode: KnowledgeConfidenceFromDbResult["matchMode"] = "NONE";
 
   let matchedConceptRows = db.prepare(`
-    SELECT DISTINCT concepts.id, concepts.name
+    SELECT DISTINCT concepts.id, concepts.name, concepts.status
     FROM concept_aliases
     JOIN concepts ON concepts.id = concept_aliases.concept_id
     WHERE lower(concept_aliases.alias) = lower(?)
-  `).all(normalizedQuestion) as { id: string; name: string }[];
+  `).all(normalizedQuestion) as { id: string; name: string; status: string }[];
 
   if (matchedConceptRows.length > 0) {
     matchMode = "ALIAS_EXACT";
@@ -40,10 +40,10 @@ export function calculateKnowledgeConfidenceFromDb(
 
   if (matchedConceptRows.length === 0) {
     matchedConceptRows = db.prepare(`
-      SELECT DISTINCT id, name
+      SELECT DISTINCT id, name, status
       FROM concepts
       WHERE lower(name) = lower(?)
-    `).all(normalizedQuestion) as { id: string; name: string }[];
+    `).all(normalizedQuestion) as { id: string; name: string; status: string }[];
 
     if (matchedConceptRows.length > 0) {
       matchMode = "CONCEPT_EXACT";
@@ -52,7 +52,7 @@ export function calculateKnowledgeConfidenceFromDb(
 
   if (matchedConceptRows.length === 0) {
     matchedConceptRows = db.prepare(`
-      SELECT DISTINCT concepts.id, concepts.name
+      SELECT DISTINCT concepts.id, concepts.name, concepts.status
       FROM concepts
       LEFT JOIN concept_aliases ON concept_aliases.concept_id = concepts.id
       WHERE lower(?) LIKE '%' || lower(concepts.name) || '%'
@@ -62,7 +62,7 @@ export function calculateKnowledgeConfidenceFromDb(
          )
       ORDER BY length(concepts.name) DESC
       LIMIT 4
-    `).all(question, question) as { id: string; name: string }[];
+    `).all(question, question) as { id: string; name: string; status: string }[];
 
     if (matchedConceptRows.length > 0) {
       matchMode = "PARTIAL";
@@ -74,6 +74,10 @@ export function calculateKnowledgeConfidenceFromDb(
   let evidenceCount = 0;
   let openGapCount = 0;
   let capabilityCount = 0;
+  let relationCount = 0;
+  let verifiedConceptCount = matchedConceptRows.filter(
+    (row) => row.status === "VERIFIED" || row.status === "CANONICAL"
+  ).length;
 
   if (conceptIds.length > 0) {
     const placeholders = conceptIds.map(() => "?").join(",");
@@ -102,6 +106,15 @@ export function calculateKnowledgeConfidenceFromDb(
     `).get(...conceptIds) as { count: number };
 
     capabilityCount = capabilityRow.count;
+
+    const relationRow = db.prepare(`
+      SELECT COUNT(DISTINCT id) AS count
+      FROM relations
+      WHERE from_concept_id IN (${placeholders})
+         OR to_concept_id IN (${placeholders})
+    `).get(...conceptIds, ...conceptIds) as { count: number };
+
+    relationCount = relationRow.count;
   }
 
   const result = calculateKnowledgeConfidence({
@@ -109,6 +122,8 @@ export function calculateKnowledgeConfidenceFromDb(
     evidence: evidenceCount,
     openGaps: openGapCount,
     capabilities: capabilityCount,
+    relations: relationCount,
+    verifiedConcepts: verifiedConceptCount,
   });
 
   return {

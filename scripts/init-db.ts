@@ -111,6 +111,33 @@ CREATE INDEX IF NOT EXISTS idx_relations_from ON relations(from_concept_id);
 CREATE INDEX IF NOT EXISTS idx_relations_to ON relations(to_concept_id);
 CREATE INDEX IF NOT EXISTS idx_capabilities_concept ON capabilities(concept_id);
 CREATE INDEX IF NOT EXISTS idx_gaps_status ON knowledge_gaps(status);
+
+CREATE TABLE IF NOT EXISTS language_patterns (
+  id TEXT PRIMARY KEY,
+  pattern_type TEXT NOT NULL,
+  instruction TEXT NOT NULL,
+  input_example TEXT NOT NULL DEFAULT '',
+  output_example TEXT NOT NULL DEFAULT '',
+  style_summary TEXT NOT NULL DEFAULT '',
+  confidence_score REAL NOT NULL DEFAULT 0.25,
+  usage_count INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS language_feedback (
+  id TEXT PRIMARY KEY,
+  user_instruction TEXT NOT NULL,
+  previous_response TEXT NOT NULL DEFAULT '',
+  improved_response TEXT NOT NULL DEFAULT '',
+  feedback_summary TEXT NOT NULL DEFAULT '',
+  learned_pattern_id TEXT,
+  created_at TEXT NOT NULL,
+  FOREIGN KEY (learned_pattern_id) REFERENCES language_patterns(id) ON DELETE SET NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_language_patterns_type ON language_patterns(pattern_type);
+CREATE INDEX IF NOT EXISTS idx_language_patterns_instruction ON language_patterns(instruction);
 `);
 
 console.log("ALAI database initialized at data/alai.db");

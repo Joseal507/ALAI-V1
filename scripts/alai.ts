@@ -9,6 +9,9 @@ import { studyAI } from "../src/providers/study-ai-provider";
 import { retrieveKnowledgeForQuestion } from "../src/retrieval/knowledge-retriever";
 import { buildInternalKnowledgeContext } from "../src/retrieval/context-builder";
 import { reasonAboutQuestion, buildQuestionReasoningContext } from "../src/reasoning/question-reasoner";
+import { retrieveLanguagePatterns, buildLanguagePatternContext } from "../src/language/language-learning-engine";
+import { renderInternalAnswerWithLanguagePatterns } from "../src/language/internal-language-renderer";
+import { buildAnswerPlan, renderAnswerPlan } from "../src/reasoning/answer-planner";
 
 async function main() {
   const input = process.argv.slice(2).join(" ").trim();
@@ -20,14 +23,44 @@ async function main() {
 
   const db = new Database("data/alai.db");
 
-  const analysis = await analyzeIntentWithAI(input);
-  const decision = decideStrategyFromAIAnalysis(analysis);
-
   const knowledgeConfidence = calculateKnowledgeConfidenceFromDb(db, input);
   const retrievedKnowledge = retrieveKnowledgeForQuestion(db, input);
   const internalKnowledgeContext = buildInternalKnowledgeContext(retrievedKnowledge);
   const questionReasoning = reasonAboutQuestion(db, input);
   const questionReasoningContext = buildQuestionReasoningContext(questionReasoning);
+  const answerPlan = buildAnswerPlan(input, retrievedKnowledge, questionReasoning);
+  const languagePatterns = retrieveLanguagePatterns(db, input);
+  const languagePatternContext = buildLanguagePatternContext(languagePatterns);
+
+  if (
+    answerPlan.canAnswerInternally &&
+    knowledgeConfidence.confidence >= 0.65 &&
+    !input.toLowerCase().includes("latest") &&
+    !input.toLowerCase().includes("current") &&
+    !input.toLowerCase().includes("today")
+  ) {
+    console.log("\n=== ALAI Mode ===");
+    console.log("INTERNAL_ONLY");
+
+    console.log("\n=== ALAI Knowledge Confidence ===");
+    console.log(JSON.stringify(knowledgeConfidence, null, 2));
+
+    console.log("\n=== ALAI Graph Reasoning Context ===");
+    console.log(questionReasoningContext);
+
+    console.log("\n=== ALAI Answer Plan ===");
+    console.log(JSON.stringify(answerPlan, null, 2));
+
+    console.log("\n=== ALAI Language Pattern Context ===");
+    console.log(languagePatternContext);
+
+    console.log("\n=== ALAI Answer ===");
+    console.log(renderInternalAnswerWithLanguagePatterns(answerPlan, languagePatterns));
+    return;
+  }
+
+  const analysis = await analyzeIntentWithAI(input);
+  const decision = decideStrategyFromAIAnalysis(analysis);
 
   const hasUsableInternalKnowledge =
     knowledgeConfidence.confidence >= 0.35 &&
@@ -95,6 +128,12 @@ async function main() {
   console.log("\n=== ALAI Graph Reasoning Context ===");
   console.log(questionReasoningContext);
 
+  console.log("\n=== ALAI Answer Plan ===");
+  console.log(JSON.stringify(answerPlan, null, 2));
+
+  console.log("\n=== ALAI Language Pattern Context ===");
+  console.log(languagePatternContext);
+
   if (researchContext) {
     console.log("\n=== ALAI Research Context ===");
     console.log(researchContext);
@@ -122,11 +161,18 @@ ${internalKnowledgeContext}
 Graph reasoning context:
 ${questionReasoningContext}
 
+Answer plan:
+${JSON.stringify(answerPlan, null, 2)}
+
+Learned language patterns:
+${languagePatternContext}
+
 Research context:
 ${researchContext || "No external research context available."}
 
 Rules:
 - Answer the user's actual question.
+- Use the answer plan first when it is available.
 - Use internal knowledge first when it is relevant.
 - If research context is available, use it to improve or verify the answer.
 - If research was needed but sources are weak or missing, be honest and answer cautiously.
