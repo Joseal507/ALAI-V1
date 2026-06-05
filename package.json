@@ -42,7 +42,8 @@
     "concepts:merge-aliases": "tsx scripts/merge-alias-concepts.ts",
     "model:health": "tsx scripts/model-health.ts",
     "gaps:close": "tsx scripts/close-resolved-gaps.ts",
-    "autonomy:cycle": "tsx scripts/autonomy-cycle.ts"
+    "autonomy:cycle": "tsx scripts/autonomy-cycle.ts",
+    "concepts:prune-noise": "tsx scripts/prune-noise-concepts.ts"
   },
   "keywords": [],
   "author": "",

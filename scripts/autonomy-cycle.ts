@@ -6,6 +6,7 @@ const steps = [
   ["relations:dedupe", "Dedupe relations"],
   ["knowledge:promote", "Promote knowledge"],
   ["gaps:close", "Close resolved gaps"],
+  ["concepts:prune-noise", "Prune noise concepts"],
   ["model:health", "Check world model health"],
 ];
 
