@@ -2,6 +2,7 @@ import type { AnswerPlan } from "../reasoning/answer-planner";
 import type { LearnedLanguagePattern } from "./language-learning-engine";
 import type { LanguageSkillContext } from "./language-skill-retriever";
 import type { DetectedLanguage } from "./language-detector";
+import { executeLanguageSkills } from "./language-skill-executor";
 
 function hasPattern(patterns: LearnedLanguagePattern[], type: string): boolean {
   return patterns.some((pattern) => pattern.patternType === type);
@@ -91,12 +92,7 @@ export function renderInternalAnswerWithLanguagePatterns(
     ? adaptExampleToPlan(examplePattern.outputExample, plan)
     : plan.conclusion;
 
-  const main = applyLanguageSkills(base, {
-    shouldSimplify,
-    shouldReduceLength,
-    shouldRemoveRedundantDetail,
-    mustPreserveMeaning,
-  });
+  const main = executeLanguageSkills(base, skillContext, outputLanguage);
 
   if (short && casual) {
     return [
