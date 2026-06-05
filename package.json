@@ -44,6 +44,7 @@
     "gaps:close": "tsx scripts/close-resolved-gaps.ts",
     "autonomy:cycle": "tsx scripts/autonomy-cycle.ts",
     "concepts:prune-noise": "tsx scripts/prune-noise-concepts.ts",
+    "concepts:strengthen-related": "tsx scripts/strengthen-related-concepts.ts",
     "autonomy:full": "tsx scripts/autonomy-full.ts",
     "reason:graph": "tsx scripts/reason-graph.ts"
   },

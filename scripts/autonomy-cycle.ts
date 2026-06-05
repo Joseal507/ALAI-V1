@@ -5,6 +5,7 @@ const steps = [
   ["concepts:merge-aliases", "Merge alias concepts"],
   ["relations:dedupe", "Dedupe relations"],
   ["reason:graph", "Infer graph relations"],
+  ["concepts:strengthen-related", "Strengthen related concepts"],
   ["knowledge:promote", "Promote knowledge"],
   ["gaps:close", "Close resolved gaps"],
   ["concepts:prune-noise", "Prune noise concepts"],

@@ -41,12 +41,16 @@ export function decideKnowledgePromotion(
     };
   }
 
-  if (qualityScore >= 0.75) {
+  if (
+    qualityScore >= 0.75 ||
+    (input.relationCount >= 5 && input.confidenceScore >= 0.6) ||
+    (input.relationCount >= 3 && input.confidenceScore >= 0.65)
+  ) {
     return {
       shouldPromote: true,
       nextStatus: "VERIFIED",
       nextConfidence: Math.max(input.confidenceScore, 0.7),
-      reason: "Concept has enough evidence, relations, or capabilities to be verified.",
+      reason: "Concept has enough evidence, relations, confidence, or graph support to be verified.",
     };
   }
 
