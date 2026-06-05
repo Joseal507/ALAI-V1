@@ -3,41 +3,118 @@ import crypto from "node:crypto";
 
 const db = new Database("data/alai.db");
 
+type AliasRelation = {
+  relationId: string;
+  sourceConceptId: string;
+  sourceConceptName: string;
+  sourceStatus: string;
+  sourceConfidence: number;
+  targetConceptId: string;
+  targetConceptName: string;
+  targetStatus: string;
+  targetConfidence: number;
+};
+
 const aliasRelations = db.prepare(`
   SELECT
     relations.id AS relationId,
     source.id AS sourceConceptId,
     source.name AS sourceConceptName,
-    target.id AS aliasConceptId,
-    target.name AS aliasConceptName
+    source.status AS sourceStatus,
+    source.confidence_score AS sourceConfidence,
+    target.id AS targetConceptId,
+    target.name AS targetConceptName,
+    target.status AS targetStatus,
+    target.confidence_score AS targetConfidence
   FROM relations
   JOIN concepts AS source ON source.id = relations.from_concept_id
   JOIN concepts AS target ON target.id = relations.to_concept_id
   WHERE relations.relation_type = 'ALIAS_OF'
-`).all() as {
-  relationId: string;
-  sourceConceptId: string;
-  sourceConceptName: string;
-  aliasConceptId: string;
-  aliasConceptName: string;
-}[];
+`).all() as AliasRelation[];
+
+const PREFERRED_CANONICAL_NAMES = new Set([
+  "angular momentum",
+  "torque",
+  "photosynthesis",
+  "angular frequency",
+  "rigid body dynamics",
+  "rotational motion",
+]);
+
+function canonicalScore(name: string, status: string, confidence: number): number {
+  const lower = name.toLowerCase().trim();
+
+  let score = 0;
+
+  if (PREFERRED_CANONICAL_NAMES.has(lower)) score += 100;
+  if (status === "CANONICAL") score += 50;
+  if (status === "VERIFIED") score += 30;
+
+  score += confidence * 20;
+
+  if (lower.startsWith("moment of ")) score -= 40;
+  if (lower === "moment") score -= 60;
+  if (lower.startsWith("rotational ")) score -= 5;
+
+  score -= Math.max(0, name.length - 28) * 0.2;
+
+  return score;
+}
+
+function chooseCanonical(item: AliasRelation) {
+  const sourceScore = canonicalScore(
+    item.sourceConceptName,
+    item.sourceStatus,
+    item.sourceConfidence
+  );
+
+  const targetScore = canonicalScore(
+    item.targetConceptName,
+    item.targetStatus,
+    item.targetConfidence
+  );
+
+  if (sourceScore >= targetScore) {
+    return {
+      canonicalId: item.sourceConceptId,
+      canonicalName: item.sourceConceptName,
+      aliasId: item.targetConceptId,
+      aliasName: item.targetConceptName,
+    };
+  }
+
+  return {
+    canonicalId: item.targetConceptId,
+    canonicalName: item.targetConceptName,
+    aliasId: item.sourceConceptId,
+    aliasName: item.sourceConceptName,
+  };
+}
 
 let merged = 0;
 let skipped = 0;
 
-const tx = db.transaction((item: typeof aliasRelations[number]) => {
-  if (item.sourceConceptId === item.aliasConceptId) {
+const tx = db.transaction((item: AliasRelation) => {
+  if (item.sourceConceptId === item.targetConceptId) {
     skipped++;
     return;
   }
+
+  const choice = chooseCanonical(item);
 
   const aliasStillExists = db.prepare(`
     SELECT id FROM concepts
     WHERE id = ?
     LIMIT 1
-  `).get(item.aliasConceptId) as { id: string } | undefined;
+  `).get(choice.aliasId) as { id: string } | undefined;
 
-  if (!aliasStillExists) {
+  const canonicalStillExists = db.prepare(`
+    SELECT id FROM concepts
+    WHERE id = ?
+    LIMIT 1
+  `).get(choice.canonicalId) as { id: string } | undefined;
+
+  if (!aliasStillExists || !canonicalStillExists) {
     skipped++;
     return;
   }
@@ -47,7 +124,7 @@ const tx = db.transaction((item: typeof aliasRelations[number]) => {
     WHERE concept_id = ?
       AND lower(alias) = lower(?)
     LIMIT 1
-  `).get(item.sourceConceptId, item.aliasConceptName) as { id: string } | undefined;
+  `).get(choice.canonicalId, choice.aliasName) as { id: string } | undefined;
 
   if (!existingAlias) {
     db.prepare(`
@@ -59,8 +136,8 @@ const tx = db.transaction((item: typeof aliasRelations[number]) => {
       ) VALUES (?, ?, ?, ?)
     `).run(
       crypto.randomUUID(),
-      item.sourceConceptId,
-      item.aliasConceptName,
+      choice.canonicalId,
+      choice.aliasName,
       new Date().toISOString()
     );
   }
@@ -69,31 +146,31 @@ const tx = db.transaction((item: typeof aliasRelations[number]) => {
     UPDATE concept_evidence
     SET concept_id = ?
     WHERE concept_id = ?
-  `).run(item.sourceConceptId, item.aliasConceptId);
+  `).run(choice.canonicalId, choice.aliasId);
 
   db.prepare(`
     UPDATE capabilities
     SET concept_id = ?
     WHERE concept_id = ?
-  `).run(item.sourceConceptId, item.aliasConceptId);
+  `).run(choice.canonicalId, choice.aliasId);
 
   db.prepare(`
     UPDATE concept_aliases
     SET concept_id = ?
     WHERE concept_id = ?
-  `).run(item.sourceConceptId, item.aliasConceptId);
+  `).run(choice.canonicalId, choice.aliasId);
 
   db.prepare(`
     UPDATE relations
     SET from_concept_id = ?
     WHERE from_concept_id = ?
-  `).run(item.sourceConceptId, item.aliasConceptId);
+  `).run(choice.canonicalId, choice.aliasId);
 
   db.prepare(`
     UPDATE relations
     SET to_concept_id = ?
     WHERE to_concept_id = ?
-  `).run(item.sourceConceptId, item.aliasConceptId);
+  `).run(choice.canonicalId, choice.aliasId);
 
   db.prepare(`
     DELETE FROM relations
@@ -104,10 +181,10 @@ const tx = db.transaction((item: typeof aliasRelations[number]) => {
   db.prepare(`
     DELETE FROM concepts
     WHERE id = ?
-  `).run(item.aliasConceptId);
+  `).run(choice.aliasId);
 
   merged++;
-  console.log("Merged alias concept:", item.aliasConceptName, "->", item.sourceConceptName);
+  console.log("Merged alias concept:", choice.aliasName, "->", choice.canonicalName);
 });
 
 for (const item of aliasRelations) {
