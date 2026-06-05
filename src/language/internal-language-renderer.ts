@@ -71,6 +71,7 @@ export function renderInternalAnswerWithLanguagePatterns(
   const casual = prefersCasual(patterns, skillContext);
   const short = prefersShort(patterns, skillContext);
   const userVoice = prefersParaphraseOrUserVoice(patterns, skillContext);
+  const hideReasoning = shouldHideReasoning(patterns, skillContext);
 
   const mustPreserveMeaning =
     hasSkillRelation(skillContext, "summarize", "REQUIRES", "preserve_core_meaning") ||
@@ -116,6 +117,17 @@ export function renderInternalAnswerWithLanguagePatterns(
   }
 
   if (casual) {
+    if (hideReasoning) {
+      return [
+        outputLanguage === "es" ? "Básicamente:" : "Basically:",
+        main,
+        "",
+        outputLanguage === "es"
+          ? `Confianza interna: ${plan.confidence}`
+          : `Internal confidence: ${plan.confidence}`,
+      ].join("\n");
+    }
+
     return [
       outputLanguage === "es" ? "Básicamente:" : "Basically:",
       main,
@@ -231,4 +243,32 @@ function adaptExampleToPlan(example: string, plan: AnswerPlan): string {
   }
 
   return cleaned;
+}
+
+
+function shouldHideReasoning(
+  patterns: LearnedLanguagePattern[],
+  skillContext?: LanguageSkillContext
+): boolean {
+  const hasShortPattern = patterns.some(
+    (pattern) => pattern.patternType === "LENGTH_CONTROL"
+  );
+
+  const hasNaturalSkill = Boolean(
+    skillContext?.skills.some((skill) => skill.name === "natural_language")
+  );
+
+  const hasSummarizeSkill = Boolean(
+    skillContext?.skills.some((skill) => skill.name === "summarize")
+  );
+
+  const hasNaturalRelation = Boolean(
+    skillContext?.relations.some(
+      (relation) =>
+        relation.fromSkill === "natural_language" ||
+        relation.toSkill === "natural_language"
+    )
+  );
+
+  return hasShortPattern || hasNaturalSkill || hasSummarizeSkill || hasNaturalRelation;
 }

@@ -181,6 +181,33 @@ CREATE TABLE IF NOT EXISTS language_phrases (
 );
 
 CREATE INDEX IF NOT EXISTS idx_language_phrases_source ON language_phrases(source_language, target_language, source_phrase);
+
+CREATE TABLE IF NOT EXISTS language_strategies (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  confidence_score REAL NOT NULL DEFAULT 0.35,
+  usage_count INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS language_strategy_relations (
+  id TEXT PRIMARY KEY,
+  strategy_id TEXT NOT NULL,
+  skill_id TEXT NOT NULL,
+  relation_type TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  confidence_score REAL NOT NULL DEFAULT 0.35,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  FOREIGN KEY (strategy_id) REFERENCES language_strategies(id) ON DELETE CASCADE,
+  FOREIGN KEY (skill_id) REFERENCES language_skills(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_language_strategies_name ON language_strategies(name);
+CREATE INDEX IF NOT EXISTS idx_language_strategy_relations_strategy ON language_strategy_relations(strategy_id);
+CREATE INDEX IF NOT EXISTS idx_language_strategy_relations_skill ON language_strategy_relations(skill_id);
 `);
 
 console.log("ALAI database initialized at data/alai.db");
