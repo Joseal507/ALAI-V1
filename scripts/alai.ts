@@ -8,6 +8,7 @@ import { buildResearchQuery } from "../src/research/research-query-builder";
 import { studyAI } from "../src/providers/study-ai-provider";
 import { retrieveKnowledgeForQuestion } from "../src/retrieval/knowledge-retriever";
 import { buildInternalKnowledgeContext } from "../src/retrieval/context-builder";
+import { reasonAboutQuestion, buildQuestionReasoningContext } from "../src/reasoning/question-reasoner";
 
 async function main() {
   const input = process.argv.slice(2).join(" ").trim();
@@ -25,6 +26,8 @@ async function main() {
   const knowledgeConfidence = calculateKnowledgeConfidenceFromDb(db, input);
   const retrievedKnowledge = retrieveKnowledgeForQuestion(db, input);
   const internalKnowledgeContext = buildInternalKnowledgeContext(retrievedKnowledge);
+  const questionReasoning = reasonAboutQuestion(db, input);
+  const questionReasoningContext = buildQuestionReasoningContext(questionReasoning);
 
   const hasUsableInternalKnowledge =
     knowledgeConfidence.confidence >= 0.35 &&
@@ -89,6 +92,9 @@ async function main() {
   console.log("\n=== ALAI Internal Knowledge Context ===");
   console.log(internalKnowledgeContext);
 
+  console.log("\n=== ALAI Graph Reasoning Context ===");
+  console.log(questionReasoningContext);
+
   if (researchContext) {
     console.log("\n=== ALAI Research Context ===");
     console.log(researchContext);
@@ -112,6 +118,9 @@ ${JSON.stringify(knowledgeConfidence, null, 2)}
 
 Internal knowledge context:
 ${internalKnowledgeContext}
+
+Graph reasoning context:
+${questionReasoningContext}
 
 Research context:
 ${researchContext || "No external research context available."}
