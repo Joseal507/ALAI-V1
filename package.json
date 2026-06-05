@@ -15,7 +15,8 @@
     "gap:inspect": "tsx scripts/inspect-gaps.ts",
     "study:plan": "tsx scripts/plan-study.ts",
     "evidence:add": "tsx scripts/add-evidence.ts",
-    "evidence:inspect": "tsx scripts/inspect-evidence.ts"
+    "evidence:inspect": "tsx scripts/inspect-evidence.ts",
+    "strategy:test": "tsx scripts/strategy-test.ts"
   },
   "keywords": [],
   "author": "",
