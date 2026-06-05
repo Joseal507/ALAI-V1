@@ -24,10 +24,19 @@ export interface RetrievedEvidence {
   reliabilityScore: number;
 }
 
+export interface RetrievedRelation {
+  fromConceptName: string;
+  toConceptName: string;
+  relationType: string;
+  description: string;
+  confidenceScore: number;
+}
+
 export interface RetrievedKnowledgeContext {
   concepts: RetrievedConcept[];
   capabilities: RetrievedCapability[];
   evidence: RetrievedEvidence[];
+  relations: RetrievedRelation[];
 }
 
 export function retrieveKnowledgeForQuestion(
@@ -59,6 +68,7 @@ export function retrieveKnowledgeForQuestion(
       concepts: [],
       capabilities: [],
       evidence: [],
+      relations: [],
     };
   }
 
@@ -93,9 +103,26 @@ export function retrieveKnowledgeForQuestion(
     LIMIT 12
   `).all(...conceptIds) as RetrievedEvidence[];
 
+  const relations = db.prepare(`
+    SELECT
+      source.name AS fromConceptName,
+      target.name AS toConceptName,
+      relations.relation_type AS relationType,
+      relations.description,
+      relations.confidence_score AS confidenceScore
+    FROM relations
+    JOIN concepts AS source ON source.id = relations.from_concept_id
+    JOIN concepts AS target ON target.id = relations.to_concept_id
+    WHERE relations.from_concept_id IN (${placeholders})
+       OR relations.to_concept_id IN (${placeholders})
+    ORDER BY relations.confidence_score DESC
+    LIMIT 16
+  `).all(...conceptIds, ...conceptIds) as RetrievedRelation[];
+
   return {
     concepts,
     capabilities,
     evidence,
+    relations,
   };
 }

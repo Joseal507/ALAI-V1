@@ -39,6 +39,17 @@ export function buildInternalKnowledgeContext(
     }
   }
 
+  if (context.relations.length > 0) {
+    parts.push("\nKNOWN RELATIONS:");
+
+    for (const relation of context.relations) {
+      parts.push(
+        `- ${relation.fromConceptName} ${relation.relationType} ${relation.toConceptName}: ` +
+        `${relation.description} (confidence=${relation.confidenceScore})`
+      );
+    }
+  }
+
   if (parts.length === 0) {
     return "No internal knowledge found for this question.";
   }
