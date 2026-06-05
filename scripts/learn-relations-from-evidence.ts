@@ -3,6 +3,9 @@ import crypto from "node:crypto";
 import { extractRelationsFromText } from "../src/learning/relation-extractor";
 import { validateExtractedRelations } from "../src/learning/knowledge-validator";
 import { decideConceptAcceptance, decideRelationAcceptance } from "../src/learning/knowledge-acceptance-engine";
+import { evaluateRelationQuality } from "../src/learning/relation-quality-engine";
+import { shouldAutoLearnConcept } from "../src/learning/concept-rank-engine";
+import { classifyRelationOntology } from "../src/ontology/relation-classifier";
 
 function getOrCreateConcept(db: Database.Database, name: string): string | null {
   const existing = db.prepare(`
@@ -21,6 +24,11 @@ function getOrCreateConcept(db: Database.Database, name: string): string | null 
   `).all() as { name: string }[];
 
   const description = `Concept discovered during relation extraction: ${name}`;
+
+  if (!shouldAutoLearnConcept(name, description)) {
+    console.warn("Rejected new relation concept by rank engine:", { name });
+    return null;
+  }
 
   const acceptance = decideConceptAcceptance({
     name,
@@ -100,6 +108,32 @@ async function main() {
         continue;
       }
 
+      const ontology = classifyRelationOntology({
+        fromConcept: relation.fromConcept,
+        toConcept: relation.toConcept,
+        relationType: relation.type,
+        description: relation.description,
+      });
+
+      if (!ontology.accepted) {
+        console.warn("Rejected by ontology engine:", ontology.reason, relation);
+        skipped++;
+        continue;
+      }
+
+      const quality = evaluateRelationQuality({
+        fromConcept: relation.fromConcept,
+        toConcept: relation.toConcept,
+        relationType: ontology.relationType,
+        description: relation.description,
+      });
+
+      if (!quality.accepted) {
+        console.warn("Rejected by relation quality engine:", quality.reason, relation);
+        skipped++;
+        continue;
+      }
+
       const fromId = getOrCreateConcept(db, relation.fromConcept);
       const toId = getOrCreateConcept(db, relation.toConcept);
 
@@ -139,7 +173,7 @@ async function main() {
         relationId,
         fromId,
         toId,
-        relation.type,
+        ontology.relationType,
         relation.description,
         0.35,
         now,

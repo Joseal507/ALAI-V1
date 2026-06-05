@@ -36,7 +36,10 @@ export type RelationType =
   | "RELATED_TO"
   | "USED_FOR"
   | "REQUIRES"
-  | "LEADS_TO";
+  | "LEADS_TO"
+  | "ALIAS_OF"
+  | "ANALOG_OF"
+  | "FORMULA_RELATION";
 
 export interface Evidence {
   id: string;
