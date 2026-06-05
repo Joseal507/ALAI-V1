@@ -1,4 +1,5 @@
 import Database from "better-sqlite3";
+import crypto from "node:crypto";
 import { analyzeIntentWithAI } from "../src/core/ai-intent-analyzer";
 import { decideStrategyFromAIAnalysis } from "../src/core/strategy-engine";
 import { calculateKnowledgeConfidence } from "../src/confidence/knowledge-confidence-engine";
@@ -48,6 +49,7 @@ async function main() {
     knowledgeConfidence.shouldResearch;
 
   let researchContext = "";
+  let savedEvidenceCount = 0;
 
   if (shouldResearch) {
     const queryPlan = await buildResearchQuery(input);
@@ -61,6 +63,32 @@ async function main() {
         return `[${index + 1}] ${source.title}\nURL: ${source.url}\nSnippet: ${source.snippet}`;
       }),
     ].join("\n\n");
+
+    const now = new Date().toISOString();
+
+    for (const source of research.sources.slice(0, 3)) {
+      db.prepare(`
+        INSERT INTO evidence (
+          id,
+          source_type,
+          source_name,
+          source_url,
+          content_summary,
+          reliability_score,
+          captured_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?)
+      `).run(
+        crypto.randomUUID(),
+        "WEBSITE",
+        source.title,
+        source.url,
+        source.snippet,
+        0.55,
+        now
+      );
+
+      savedEvidenceCount++;
+    }
   }
 
   console.log("\n=== ALAI Strategy ===");
@@ -72,6 +100,7 @@ async function main() {
   if (researchContext) {
     console.log("\n=== ALAI Research Context ===");
     console.log(researchContext);
+    console.log(`\nSaved evidence items: ${savedEvidenceCount}`);
   }
 
   const answer = await studyAI({
