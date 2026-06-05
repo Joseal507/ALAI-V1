@@ -17,7 +17,8 @@
     "evidence:add": "tsx scripts/add-evidence.ts",
     "evidence:inspect": "tsx scripts/inspect-evidence.ts",
     "strategy:test": "tsx scripts/strategy-test.ts",
-    "ai:test": "tsx scripts/ai-test.ts"
+    "ai:test": "tsx scripts/ai-test.ts",
+    "alai": "tsx scripts/alai.ts"
   },
   "keywords": [],
   "author": "",
