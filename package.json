@@ -28,7 +28,9 @@
     "capability:add": "tsx scripts/add-capability.ts",
     "learn:relations": "tsx scripts/learn-relations-from-evidence.ts",
     "knowledge:clean": "tsx scripts/clean-invalid-knowledge.ts",
-    "relations:prune": "tsx scripts/prune-low-quality-relations.ts"
+    "relations:prune": "tsx scripts/prune-low-quality-relations.ts",
+    "consolidation:suggest": "tsx scripts/consolidation-suggest.ts",
+    "consolidation:aliases": "tsx scripts/consolidation-apply-aliases.ts"
   },
   "keywords": [],
   "author": "",
