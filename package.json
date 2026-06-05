@@ -12,7 +12,10 @@
     "learn:intake": "tsx scripts/intake-text.ts",
     "learn:events": "tsx scripts/inspect-learning-events.ts",
     "gap:create": "tsx scripts/create-gap.ts",
-    "gap:inspect": "tsx scripts/inspect-gaps.ts"
+    "gap:inspect": "tsx scripts/inspect-gaps.ts",
+    "study:plan": "tsx scripts/plan-study.ts",
+    "evidence:add": "tsx scripts/add-evidence.ts",
+    "evidence:inspect": "tsx scripts/inspect-evidence.ts"
   },
   "keywords": [],
   "author": "",
