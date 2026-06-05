@@ -59,6 +59,14 @@ function inferRelevantSkillNames(instruction: string): string[] {
     skills.add("technical_tone");
   }
 
+  if (/(profesional|professional)/.test(text)) {
+    skills.add("professional_tone");
+  }
+
+  if (/(humano|natural|human)/.test(text)) {
+    skills.add("natural_language");
+  }
+
   if (/(como yo|como si fuera yo|mi estilo|suena a mí)/.test(text)) {
     skills.add("user_voice");
   }

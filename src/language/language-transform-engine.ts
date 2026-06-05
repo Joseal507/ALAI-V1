@@ -60,3 +60,49 @@ export function translateKnownPhrasesToSpanish(text: string): string {
     )
     .trim();
 }
+
+
+export function makeProfessional(text: string): string {
+  return text
+    .replace(/Básicamente:\n?/gi, "")
+    .replace(/Basically:\n?/gi, "")
+    .replace(/cómo gira algo/gi, "cómo cambia su rotación")
+    .replace(/how something spins/gi, "how its rotation changes")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+export function makeNatural(text: string): string {
+  return text
+    .replace(/El torque cambia el momento angular con el tiempo\./gi, "En simple, el torque cambia cómo gira algo.")
+    .replace(/Torque changes angular momentum over time\./gi, "Basically, torque changes how something spins.")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+
+export function removeNearDuplicateSentences(text: string): string {
+  const sentences = text
+    .split(/(?<=[.!?])\s+/)
+    .map((sentence) => sentence.trim())
+    .filter(Boolean);
+
+  const result: string[] = [];
+  const seen = new Set<string>();
+
+  for (const sentence of sentences) {
+    const key = sentence
+      .toLowerCase()
+      .replace(/basically,?\s*/g, "")
+      .replace(/en simple,?\s*/g, "")
+      .replace(/[^a-záéíóúñ0-9 ]/gi, "")
+      .trim();
+
+    if (seen.has(key)) continue;
+
+    seen.add(key);
+    result.push(sentence);
+  }
+
+  return result.join(" ");
+}

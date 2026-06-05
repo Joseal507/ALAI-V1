@@ -54,7 +54,8 @@
     "language:seed-skills": "tsx scripts/seed-language-skills.ts",
     "language:seed-ontology": "tsx scripts/seed-language-ontology.ts",
     "language:seed-phrases": "tsx scripts/seed-language-phrases.ts",
-    "language:self-improve": "tsx scripts/language-self-improve.ts"
+    "language:self-improve": "tsx scripts/language-self-improve.ts",
+    "language:strengthen-skills": "tsx scripts/strengthen-language-skills.ts"
   },
   "keywords": [],
   "author": "",

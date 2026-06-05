@@ -5,10 +5,25 @@ import {
   removeRedundantDetail,
   replaceComplexWords,
   translateKnownPhrasesToSpanish,
+  makeProfessional,
+  makeNatural,
+  removeNearDuplicateSentences,
 } from "./language-transform-engine";
 
 function hasSkill(context: LanguageSkillContext | undefined, name: string): boolean {
-  return Boolean(context?.skills.some(skill => skill.name === name));
+  if (context?.skills.some(skill => skill.name === name)) return true;
+
+  return Boolean(
+    context?.relations.some(
+      relation =>
+        relation.toSkill === name &&
+        (
+          relation.relationType === "USES" ||
+          relation.relationType === "OFTEN_USES" ||
+          relation.relationType === "REQUIRES"
+        )
+    )
+  );
 }
 
 function hasRelation(
@@ -60,6 +75,16 @@ export function executeLanguageSkills(
   if (outputLanguage === "es") {
     result = translateKnownPhrasesToSpanish(result);
   }
+
+  if (hasSkill(context, "professional_tone")) {
+    result = makeProfessional(result);
+  }
+
+  if (hasSkill(context, "natural_language")) {
+    result = makeNatural(result);
+  }
+
+  result = removeNearDuplicateSentences(result);
 
   return result.trim();
 }
