@@ -41,7 +41,8 @@
     "ontology:repair": "tsx scripts/repair-ontology.ts",
     "concepts:merge-aliases": "tsx scripts/merge-alias-concepts.ts",
     "model:health": "tsx scripts/model-health.ts",
-    "gaps:close": "tsx scripts/close-resolved-gaps.ts"
+    "gaps:close": "tsx scripts/close-resolved-gaps.ts",
+    "autonomy:cycle": "tsx scripts/autonomy-cycle.ts"
   },
   "keywords": [],
   "author": "",
