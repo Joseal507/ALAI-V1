@@ -45,6 +45,16 @@ Rules:
 - If the text says "analog", "analogue", or "correspondent", use ANALOG_OF.
 - If the text expresses an equation, derivative, or formula relation, use FORMULA_RELATION, not EQUALS.
 - If text is insufficient, return {"relations":[]}.
+- Do not use raw symbols as concept names. Convert symbols to concepts:
+  - ω or omega means Angular Frequency.
+  - ν or f means Ordinary frequency.
+  - τ or tau means Torque.
+  - L means Angular Momentum.
+- For formulas, make concepts semantic:
+  - "ω = 2πν" means Angular Frequency has FORMULA_RELATION with Ordinary frequency.
+  - "τ = dL/dt" means Torque CAUSES or CHANGES Angular Momentum.
+- Do not output "derivative of angular momentum" as a concept. Use Angular Momentum.
+- Do not output "applied torque" as a separate concept if Torque is meant. Use Torque.
         `.trim(),
       },
       {
