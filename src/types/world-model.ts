@@ -30,6 +30,7 @@ export type RelationType =
   | "PART_OF"
   | "DEPENDS_ON"
   | "CAUSES"
+  | "CHANGES"
   | "PRODUCES"
   | "EXPLAINS"
   | "CONTRADICTS"

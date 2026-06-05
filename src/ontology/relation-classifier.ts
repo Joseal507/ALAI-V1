@@ -2,6 +2,7 @@ export type OntologyRelationType =
   | "IS_A"
   | "PART_OF"
   | "CAUSES"
+  | "CHANGES"
   | "DEPENDS_ON"
   | "RELATED_TO"
   | "ALIAS_OF"
@@ -76,6 +77,24 @@ export function classifyRelationOntology(
   }
 
   if (
+    from === "torque" &&
+    to === "angular momentum" &&
+    (
+      rawType === "CHANGES" ||
+      rawType === "CAUSES" ||
+      description.includes("changes angular momentum") ||
+      description.includes("time derivative of angular momentum")
+    )
+  ) {
+    return {
+      relationType: "CHANGES",
+      accepted: true,
+      confidence: 0.9,
+      reason: "Scientific change relation.",
+    };
+  }
+
+  if (
     description.includes("d l") ||
     description.includes("d\\mathbf") ||
     description.includes("dl/dt") ||
@@ -111,6 +130,7 @@ export function classifyRelationOntology(
     rawType === "IS_A" ||
     rawType === "PART_OF" ||
     rawType === "CAUSES" ||
+    rawType === "CHANGES" ||
     rawType === "DEPENDS_ON" ||
     rawType === "RELATED_TO" ||
     rawType === "USED_FOR" ||
