@@ -32,6 +32,15 @@ export function decideKnowledgePromotion(
     };
   }
 
+  if (input.status === "VERIFIED") {
+    return {
+      shouldPromote: false,
+      nextStatus: "VERIFIED",
+      nextConfidence: input.confidenceScore,
+      reason: "Already verified.",
+    };
+  }
+
   if (qualityScore >= 0.75) {
     return {
       shouldPromote: true,
