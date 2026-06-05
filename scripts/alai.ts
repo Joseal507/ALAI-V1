@@ -26,10 +26,16 @@ async function main() {
   const retrievedKnowledge = retrieveKnowledgeForQuestion(db, input);
   const internalKnowledgeContext = buildInternalKnowledgeContext(retrievedKnowledge);
 
+  const hasUsableInternalKnowledge =
+    knowledgeConfidence.confidence >= 0.35 &&
+    knowledgeConfidence.matchedConcepts > 0 &&
+    knowledgeConfidence.matchedEvidence > 0 &&
+    knowledgeConfidence.matchedCapabilities > 0;
+
   const shouldResearch =
-    decision.needsResearch ||
     decision.needsCurrentInfo ||
-    knowledgeConfidence.shouldResearch;
+    decision.needsResearch ||
+    (!hasUsableInternalKnowledge && knowledgeConfidence.shouldResearch);
 
   let researchContext = "";
   let savedEvidenceCount = 0;
