@@ -22,7 +22,9 @@
     "consensus:test": "tsx scripts/consensus-test.ts",
     "research:test": "tsx scripts/research-test.ts",
     "confidence:test": "tsx scripts/confidence-test.ts",
-    "learn:evidence": "tsx scripts/learn-from-evidence.ts"
+    "learn:evidence": "tsx scripts/learn-from-evidence.ts",
+    "alias:add": "tsx scripts/add-alias.ts",
+    "evidence:link": "tsx scripts/link-evidence.ts"
   },
   "keywords": [],
   "author": "",
