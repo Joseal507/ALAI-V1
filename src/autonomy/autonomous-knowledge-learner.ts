@@ -6,6 +6,16 @@ import { validateExtractedConcepts, validateExtractedRelations } from "../learni
 import { decideConceptAcceptance, decideRelationAcceptance } from "../learning/knowledge-acceptance-engine";
 import { shouldAutoLearnConcept } from "../learning/concept-rank-engine";
 
+
+function normalizeExtractedRelationType(type: string): string {
+  const normalized = type.trim().toUpperCase();
+
+  if (normalized === "IS_RELATED_TO") return "RELATED_TO";
+  if (normalized === "EQUALS") return "FORMULA_RELATION";
+
+  return normalized;
+}
+
 function getExistingConceptNames(db: Database.Database): string[] {
   const rows = db.prepare(`SELECT name FROM concepts`).all() as { name: string }[];
   return rows.map((row) => row.name);
@@ -79,7 +89,12 @@ export async function learnKnowledgeFromEvidenceText(
   }
 
   const relationExtraction = await extractRelationsFromText(text);
-  const relationValidation = validateExtractedRelations(relationExtraction.relations);
+  const normalizedRelations = relationExtraction.relations.map((relation) => ({
+    ...relation,
+    type: normalizeExtractedRelationType(relation.type) as typeof relation.type,
+  }));
+
+  const relationValidation = validateExtractedRelations(normalizedRelations);
 
   for (const rejected of relationValidation.rejected) {
     console.warn("Rejected relation:", rejected.reason, rejected.item);

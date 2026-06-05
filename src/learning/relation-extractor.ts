@@ -29,7 +29,7 @@ Return ONLY valid JSON:
     {
       "fromConcept": "string",
       "toConcept": "string",
-      "type": "IS_A" | "PART_OF" | "DEPENDS_ON" | "CAUSES" | "PRODUCES" | "EXPLAINS" | "CONTRADICTS" | "SUPPORTS" | "RELATED_TO" | "USED_FOR" | "REQUIRES" | "LEADS_TO",
+      "type": "IS_A" | "PART_OF" | "DEPENDS_ON" | "CAUSES" | "PRODUCES" | "EXPLAINS" | "CONTRADICTS" | "SUPPORTS" | "RELATED_TO" | "USED_FOR" | "REQUIRES" | "LEADS_TO" | "ALIAS_OF" | "ANALOG_OF" | "FORMULA_RELATION",
       "description": "string"
     }
   ]
@@ -40,6 +40,10 @@ Rules:
 - Prefer canonical concept names in English.
 - Do not invent facts not supported by the text.
 - Maximum 8 relations.
+- Use RELATED_TO, not IS_RELATED_TO.
+- If the text says "also called", "also known as", or "also referred to as", use ALIAS_OF.
+- If the text says "analog", "analogue", or "correspondent", use ANALOG_OF.
+- If the text expresses an equation, derivative, or formula relation, use FORMULA_RELATION, not EQUALS.
 - If text is insufficient, return {"relations":[]}.
         `.trim(),
       },

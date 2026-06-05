@@ -2,6 +2,7 @@ export type KnowledgeStatus =
   | "CANONICAL"
   | "VERIFIED"
   | "PENDING"
+  | "SUPPORTED"
   | "UNCERTAIN"
   | "REJECTED";
 
@@ -39,7 +40,10 @@ export type RelationType =
   | "LEADS_TO"
   | "ALIAS_OF"
   | "ANALOG_OF"
-  | "FORMULA_RELATION";
+  | "FORMULA_RELATION"
+  | "INDIRECTLY_DEPENDS_ON"
+  | "INDIRECTLY_RELATED_TO"
+  | "CONTRIBUTES_TO";
 
 export interface Evidence {
   id: string;

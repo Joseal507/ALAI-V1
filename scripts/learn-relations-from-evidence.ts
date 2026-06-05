@@ -6,6 +6,17 @@ import { decideConceptAcceptance, decideRelationAcceptance } from "../src/learni
 import { evaluateRelationQuality } from "../src/learning/relation-quality-engine";
 import { shouldAutoLearnConcept } from "../src/learning/concept-rank-engine";
 import { classifyRelationOntology } from "../src/ontology/relation-classifier";
+import { evaluateConceptQuality } from "../src/ontology/concept-quality-engine";
+
+
+function normalizeExtractedRelationType(type: string): string {
+  const normalized = type.trim().toUpperCase();
+
+  if (normalized === "IS_RELATED_TO") return "RELATED_TO";
+  if (normalized === "EQUALS") return "FORMULA_RELATION";
+
+  return normalized;
+}
 
 function getOrCreateConcept(db: Database.Database, name: string): string | null {
   const existing = db.prepare(`
@@ -88,7 +99,12 @@ async function main() {
       `${row.source_name}\n${row.content_summary}`
     );
 
-    const validation = validateExtractedRelations(extraction.relations);
+    const normalizedRelations = extraction.relations.map((relation) => ({
+      ...relation,
+      type: normalizeExtractedRelationType(relation.type) as typeof relation.type,
+    }));
+
+    const validation = validateExtractedRelations(normalizedRelations);
 
     for (const rejected of validation.rejected) {
       console.warn("Rejected relation:", rejected.reason, rejected.item);
@@ -130,6 +146,20 @@ async function main() {
 
       if (!quality.accepted) {
         console.warn("Rejected by relation quality engine:", quality.reason, relation);
+        skipped++;
+        continue;
+      }
+
+      const fromQuality = evaluateConceptQuality(relation.fromConcept);
+      if (!fromQuality.accepted) {
+        console.warn("Rejected fromConcept by concept quality engine:", fromQuality.reason, relation);
+        skipped++;
+        continue;
+      }
+
+      const toQuality = evaluateConceptQuality(relation.toConcept);
+      if (!toQuality.accepted) {
+        console.warn("Rejected toConcept by concept quality engine:", toQuality.reason, relation);
         skipped++;
         continue;
       }

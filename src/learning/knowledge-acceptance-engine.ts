@@ -38,6 +38,22 @@ const TOO_GENERIC_CONCEPTS = new Set([
   "knowledge",
 ]);
 
+const BROAD_FIELD_CONCEPTS = new Set([
+  "physics",
+  "science",
+  "biology",
+  "chemistry",
+  "engineering",
+  "object",
+  "thing",
+  "system",
+  "process",
+  "concept",
+  "method",
+  "information",
+  "knowledge",
+]);
+
 function normalize(value: string): string {
   return value.trim().toLowerCase();
 }
@@ -116,7 +132,7 @@ export function decideRelationAcceptance(
     };
   }
 
-  if (TOO_GENERIC_CONCEPTS.has(from) || TOO_GENERIC_CONCEPTS.has(to)) {
+  if (BROAD_FIELD_CONCEPTS.has(from) || BROAD_FIELD_CONCEPTS.has(to)) {
     return {
       accepted: false,
       confidence: 0.8,

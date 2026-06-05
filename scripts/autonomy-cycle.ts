@@ -4,6 +4,7 @@ const steps = [
   ["ontology:repair", "Repair ontology"],
   ["concepts:merge-aliases", "Merge alias concepts"],
   ["relations:dedupe", "Dedupe relations"],
+  ["reason:graph", "Infer graph relations"],
   ["knowledge:promote", "Promote knowledge"],
   ["gaps:close", "Close resolved gaps"],
   ["concepts:prune-noise", "Prune noise concepts"],

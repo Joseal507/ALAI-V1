@@ -15,6 +15,12 @@ const VALID_RELATION_TYPES = new Set<string>([
   "USED_FOR",
   "REQUIRES",
   "LEADS_TO",
+  "CONTRIBUTES_TO",
+  "INDIRECTLY_RELATED_TO",
+  "INDIRECTLY_DEPENDS_ON",
+  "FORMULA_RELATION",
+  "ANALOG_OF",
+  "ALIAS_OF",
 ]);
 
 const BANNED_CONCEPT_NAMES = new Set<string>([

@@ -8,7 +8,10 @@ export type OntologyRelationType =
   | "ANALOG_OF"
   | "USED_FOR"
   | "EXPLAINS"
-  | "FORMULA_RELATION";
+  | "FORMULA_RELATION"
+  | "INDIRECTLY_DEPENDS_ON"
+  | "INDIRECTLY_RELATED_TO"
+  | "CONTRIBUTES_TO";
 
 export interface RelationClassificationInput {
   fromConcept: string;
@@ -111,7 +114,11 @@ export function classifyRelationOntology(
     rawType === "DEPENDS_ON" ||
     rawType === "RELATED_TO" ||
     rawType === "USED_FOR" ||
-    rawType === "EXPLAINS"
+    rawType === "EXPLAINS" ||
+    rawType === "FORMULA_RELATION" ||
+    rawType === "CONTRIBUTES_TO" ||
+    rawType === "INDIRECTLY_DEPENDS_ON" ||
+    rawType === "INDIRECTLY_RELATED_TO"
   ) {
     return {
       relationType: rawType as OntologyRelationType,
