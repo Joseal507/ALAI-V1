@@ -10,7 +10,9 @@
     "db:seed": "tsx scripts/seed-world-model.ts",
     "db:inspect": "tsx scripts/inspect-world-model.ts",
     "learn:intake": "tsx scripts/intake-text.ts",
-    "learn:events": "tsx scripts/inspect-learning-events.ts"
+    "learn:events": "tsx scripts/inspect-learning-events.ts",
+    "gap:create": "tsx scripts/create-gap.ts",
+    "gap:inspect": "tsx scripts/inspect-gaps.ts"
   },
   "keywords": [],
   "author": "",
