@@ -30,7 +30,10 @@
     "knowledge:clean": "tsx scripts/clean-invalid-knowledge.ts",
     "relations:prune": "tsx scripts/prune-low-quality-relations.ts",
     "consolidation:suggest": "tsx scripts/consolidation-suggest.ts",
-    "consolidation:aliases": "tsx scripts/consolidation-apply-aliases.ts"
+    "consolidation:aliases": "tsx scripts/consolidation-apply-aliases.ts",
+    "consolidation:merge-force": "tsx scripts/consolidation-merge-force.ts",
+    "relations:dedupe": "tsx scripts/dedupe-relations.ts",
+    "relations:prune-alias": "tsx scripts/prune-alias-relations.ts"
   },
   "keywords": [],
   "author": "",
