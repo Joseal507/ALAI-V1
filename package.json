@@ -53,7 +53,8 @@
     "language:feedback": "tsx scripts/learn-language-feedback.ts",
     "language:seed-skills": "tsx scripts/seed-language-skills.ts",
     "language:seed-ontology": "tsx scripts/seed-language-ontology.ts",
-    "language:seed-phrases": "tsx scripts/seed-language-phrases.ts"
+    "language:seed-phrases": "tsx scripts/seed-language-phrases.ts",
+    "language:self-improve": "tsx scripts/language-self-improve.ts"
   },
   "keywords": [],
   "author": "",

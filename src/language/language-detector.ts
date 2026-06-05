@@ -1,35 +1,21 @@
-export type DetectedLanguage = "es" | "en" | "mixed" | "unknown";
+export type DetectedLanguage =
+  | "es"
+  | "en"
+  | "it"
+  | "fr"
+  | "pt"
+  | "zh"
+  | "mixed"
+  | "unknown";
 
-const SPANISH_SIGNALS = [
-  "qué",
-  "que",
-  "cómo",
-  "como",
-  "dímelo",
-  "explica",
-  "explícalo",
-  "más",
-  "corto",
-  "casual",
-  "vaina",
-  "eso",
-  "hazlo",
-  "para",
-  "conmigo",
-];
-
-const ENGLISH_SIGNALS = [
-  "what",
-  "how",
-  "why",
-  "explain",
-  "short",
-  "casual",
-  "technical",
-  "does",
-  "affect",
-  "change",
-];
+const LANGUAGE_SIGNALS: Record<Exclude<DetectedLanguage, "mixed" | "unknown">, string[]> = {
+  es: ["qué", "que", "cómo", "como", "dímelo", "explícalo", "más", "corto", "vaina", "hazlo", "conmigo"],
+  en: ["what", "how", "why", "explain", "short", "casually", "does", "affect", "change"],
+  it: ["cosa", "come", "spiegalo", "spiegami", "breve", "casuale", "perché"],
+  fr: ["quoi", "comment", "explique", "court", "simple", "pourquoi"],
+  pt: ["como", "explique", "curto", "simples", "por que"],
+  zh: ["什么", "怎么", "解释", "简短", "简单"],
+};
 
 function normalize(value: string): string {
   return value.trim().toLowerCase();
@@ -38,38 +24,31 @@ function normalize(value: string): string {
 export function detectLanguage(text: string): DetectedLanguage {
   const normalized = normalize(text);
 
-  const spanishScore = SPANISH_SIGNALS.filter((word) =>
-    normalized.includes(word)
-  ).length;
+  const scores = Object.entries(LANGUAGE_SIGNALS).map(([language, signals]) => ({
+    language: language as Exclude<DetectedLanguage, "mixed" | "unknown">,
+    score: signals.filter((word) => normalized.includes(word)).length,
+  }));
 
-  const englishScore = ENGLISH_SIGNALS.filter((word) =>
-    normalized.includes(word)
-  ).length;
+  const matched = scores.filter((item) => item.score > 0).sort((a, b) => b.score - a.score);
 
-  if (spanishScore === 0 && englishScore === 0) return "unknown";
-  if (spanishScore > 0 && englishScore > 0) return "mixed";
-  if (spanishScore > englishScore) return "es";
-  if (englishScore > spanishScore) return "en";
+  if (matched.length === 0) return "unknown";
+  if (matched.length > 1 && matched[0].score === matched[1].score) return "mixed";
 
-  return "mixed";
+  return matched[0].language;
 }
 
-export function preferredOutputLanguage(text: string): "es" | "en" {
+export function preferredOutputLanguage(text: string): Exclude<DetectedLanguage, "mixed" | "unknown"> {
   const detected = detectLanguage(text);
 
-  if (detected === "es") return "es";
-  if (detected === "en") return "en";
+  if (detected !== "mixed" && detected !== "unknown") return detected;
 
   const normalized = normalize(text);
 
-  const explicitSpanish =
-    /(dímelo|explícalo|hazlo|como si fuera yo|más corto|más casual|qué|cómo)/.test(normalized);
+  if (/(explain|tell me|make it|shorter|casually|how does|what does|why does)/.test(normalized)) return "en";
+  if (/(dímelo|explícalo|hazlo|más corto|más casual|qué|cómo)/.test(normalized)) return "es";
+  if (/(spiegami|spiegalo|come|cosa|breve)/.test(normalized)) return "it";
+  if (/(explique|comment|quoi|court)/.test(normalized)) return "fr";
+  if (/(简短|解释|什么|怎么)/.test(normalized)) return "zh";
 
-  const explicitEnglish =
-    /(explain|tell me|make it|shorter|casually|how does|what does|why does)/.test(normalized);
-
-  if (explicitEnglish && !explicitSpanish) return "en";
-  if (explicitSpanish && !explicitEnglish) return "es";
-
-  return "es";
+  return "en";
 }
