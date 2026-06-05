@@ -6,6 +6,8 @@ import { calculateKnowledgeConfidenceFromDb } from "../src/confidence/knowledge-
 import { researchWeb } from "../src/research/research-engine";
 import { buildResearchQuery } from "../src/research/research-query-builder";
 import { studyAI } from "../src/providers/study-ai-provider";
+import { retrieveKnowledgeForQuestion } from "../src/retrieval/knowledge-retriever";
+import { buildInternalKnowledgeContext } from "../src/retrieval/context-builder";
 
 async function main() {
   const input = process.argv.slice(2).join(" ").trim();
@@ -21,6 +23,8 @@ async function main() {
   const decision = decideStrategyFromAIAnalysis(analysis);
 
   const knowledgeConfidence = calculateKnowledgeConfidenceFromDb(db, input);
+  const retrievedKnowledge = retrieveKnowledgeForQuestion(db, input);
+  const internalKnowledgeContext = buildInternalKnowledgeContext(retrievedKnowledge);
 
   const shouldResearch =
     decision.needsResearch ||
@@ -76,6 +80,9 @@ async function main() {
   console.log("\n=== ALAI Knowledge Confidence ===");
   console.log(JSON.stringify(knowledgeConfidence, null, 2));
 
+  console.log("\n=== ALAI Internal Knowledge Context ===");
+  console.log(internalKnowledgeContext);
+
   if (researchContext) {
     console.log("\n=== ALAI Research Context ===");
     console.log(researchContext);
@@ -97,12 +104,16 @@ ${JSON.stringify(decision, null, 2)}
 Knowledge confidence:
 ${JSON.stringify(knowledgeConfidence, null, 2)}
 
+Internal knowledge context:
+${internalKnowledgeContext}
+
 Research context:
 ${researchContext || "No external research context available."}
 
 Rules:
 - Answer the user's actual question.
-- If research context is available, use it.
+- Use internal knowledge first when it is relevant.
+- If research context is available, use it to improve or verify the answer.
 - If research was needed but sources are weak or missing, be honest and answer cautiously.
 - Do not expose internal JSON.
 - Do not say "I cannot access real-time info" if research context exists.

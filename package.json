@@ -25,7 +25,9 @@
     "learn:evidence": "tsx scripts/learn-from-evidence.ts",
     "alias:add": "tsx scripts/add-alias.ts",
     "evidence:link": "tsx scripts/link-evidence.ts",
-    "capability:add": "tsx scripts/add-capability.ts"
+    "capability:add": "tsx scripts/add-capability.ts",
+    "learn:relations": "tsx scripts/learn-relations-from-evidence.ts",
+    "knowledge:clean": "tsx scripts/clean-invalid-knowledge.ts"
   },
   "keywords": [],
   "author": "",
