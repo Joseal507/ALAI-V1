@@ -16,7 +16,8 @@
     "study:plan": "tsx scripts/plan-study.ts",
     "evidence:add": "tsx scripts/add-evidence.ts",
     "evidence:inspect": "tsx scripts/inspect-evidence.ts",
-    "strategy:test": "tsx scripts/strategy-test.ts"
+    "strategy:test": "tsx scripts/strategy-test.ts",
+    "ai:test": "tsx scripts/ai-test.ts"
   },
   "keywords": [],
   "author": "",
@@ -25,10 +26,12 @@
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^25.9.1",
+    "dotenv": "^17.4.2",
     "tsx": "^4.22.4",
     "typescript": "^6.0.3"
   },
   "dependencies": {
-    "better-sqlite3": "^12.10.0"
+    "better-sqlite3": "^12.10.0",
+    "openai": "^6.42.0"
   }
 }

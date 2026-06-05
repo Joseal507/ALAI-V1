@@ -1,4 +1,4 @@
-import { decideStrategy } from "../src/core/strategy-engine";
+import { decideStrategyFallback } from "../src/core/strategy-engine";
 
 const input = process.argv.slice(2).join(" ").trim();
 
@@ -7,7 +7,7 @@ if (!input) {
   process.exit(1);
 }
 
-const decision = decideStrategy(input);
+const decision = decideStrategyFallback(input);
 
 console.log("\n=== ALAI Strategy Decision ===");
-console.log({ input, ...decision });
+console.log(JSON.stringify(decision, null, 2));

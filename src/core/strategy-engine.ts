@@ -5,85 +5,80 @@ export type StrategyMode =
   | "LEARN"
   | "REFUSE";
 
-export interface StrategyDecision {
-  mode: StrategyMode;
-  confidence: number;
-  reasons: string[];
+export interface ResponseStyle {
+  depth: "short" | "normal" | "deep";
+  tone: "casual" | "professional" | "academic" | "adaptive";
+  format: "direct" | "step_by_step" | "explanation" | "research_answer";
 }
 
-const REAL_TIME_PATTERNS = [
-  "hoy",
-  "ayer",
-  "ahora",
-  "actual",
-  "último",
-  "ultima",
-  "última",
-  "reciente",
-  "ganó",
-  "gano",
-  "precio",
-  "noticia",
-];
+export interface IntentAnalysis {
+  intent: string;
+  mode: StrategyMode;
+  needsResearch: boolean;
+  needsCurrentInfo: boolean;
+  needsDeepReasoning: boolean;
+  isAcademic: boolean;
+  shouldCreateKnowledgeGap: boolean;
+  confidence: number;
+  reasoningSummary: string;
+  userGoal: string;
+  responseStyle: ResponseStyle;
+}
 
-const COMPLEX_PATTERNS = [
-  "explica",
-  "analiza",
-  "compara",
-  "relaciona",
-  "resuelve",
-  "enséñame",
-  "ensename",
-  "profundo",
-  "detallado",
-];
+export interface StrategyDecision extends IntentAnalysis {
+  source: "AI_ANALYSIS" | "SAFE_FALLBACK";
+}
 
-export function decideStrategy(input: string): StrategyDecision {
-  const normalized = input.toLowerCase().trim();
+export function decideStrategyFromAIAnalysis(
+  analysis: IntentAnalysis
+): StrategyDecision {
+  return {
+    ...analysis,
+    source: "AI_ANALYSIS",
+  };
+}
+
+export function decideStrategyFallback(input: string): StrategyDecision {
+  const normalized = input.trim();
 
   if (!normalized) {
     return {
+      source: "SAFE_FALLBACK",
+      intent: "empty_request",
       mode: "REFUSE",
+      needsResearch: false,
+      needsCurrentInfo: false,
+      needsDeepReasoning: false,
+      isAcademic: false,
+      shouldCreateKnowledgeGap: false,
       confidence: 1,
-      reasons: ["Empty input"],
-    };
-  }
-
-  const isRealTime = REAL_TIME_PATTERNS.some((pattern) =>
-    normalized.includes(pattern)
-  );
-
-  if (isRealTime) {
-    return {
-      mode: "RESEARCH",
-      confidence: 0.9,
-      reasons: ["The request may require current or changing information."],
-    };
-  }
-
-  const isComplex = COMPLEX_PATTERNS.some((pattern) =>
-    normalized.includes(pattern)
-  );
-
-  if (isComplex) {
-    return {
-      mode: "THINK",
-      confidence: 0.75,
-      reasons: ["The request asks for reasoning, explanation, analysis, or depth."],
-    };
-  }
-
-  if (normalized.length < 40) {
-    return {
-      mode: "FAST",
-      confidence: 0.7,
-      reasons: ["The request appears short and likely answerable directly."],
+      reasoningSummary: "The user did not provide a request.",
+      userGoal: "No user goal detected.",
+      responseStyle: {
+        depth: "short",
+        tone: "adaptive",
+        format: "direct",
+      },
     };
   }
 
   return {
+    source: "SAFE_FALLBACK",
+    intent: "unknown_until_ai_analysis",
     mode: "THINK",
-    confidence: 0.65,
-    reasons: ["Defaulting to deeper reasoning for non-trivial input."],
+    needsResearch: true,
+    needsCurrentInfo: false,
+    needsDeepReasoning: true,
+    isAcademic: false,
+    shouldCreateKnowledgeGap: true,
+    confidence: 0.3,
+    reasoningSummary:
+      "No AI intent analyzer is connected yet, so ALAI should avoid shallow assumptions and use deeper analysis or research.",
+    userGoal: normalized,
+    responseStyle: {
+      depth: "normal",
+      tone: "adaptive",
+      format: "explanation",
+    },
   };
 }
