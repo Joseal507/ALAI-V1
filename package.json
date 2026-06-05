@@ -19,7 +19,9 @@
     "strategy:test": "tsx scripts/strategy-test.ts",
     "ai:test": "tsx scripts/ai-test.ts",
     "alai": "tsx scripts/alai.ts",
-    "consensus:test": "tsx scripts/consensus-test.ts"
+    "consensus:test": "tsx scripts/consensus-test.ts",
+    "research:test": "tsx scripts/research-test.ts",
+    "confidence:test": "tsx scripts/confidence-test.ts"
   },
   "keywords": [],
   "author": "",
