@@ -1,0 +1,550 @@
+academic_domains|CREATE TABLE academic_domains (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  parent_domain_id TEXT,
+  description TEXT NOT NULL DEFAULT '',
+  depth INTEGER NOT NULL DEFAULT 0,
+  status TEXT NOT NULL DEFAULT 'PENDING',
+  confidence_score REAL NOT NULL DEFAULT 0.25,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  FOREIGN KEY (parent_domain_id) REFERENCES academic_domains(id) ON DELETE SET NULL
+)
+alai_autonomous_exams|CREATE TABLE alai_autonomous_exams (
+  id TEXT PRIMARY KEY,
+  concept_id TEXT NOT NULL,
+  exam_type TEXT NOT NULL,
+  prompt TEXT NOT NULL,
+  expected_terms_json TEXT NOT NULL DEFAULT '[]',
+  answer TEXT NOT NULL DEFAULT '',
+  score REAL NOT NULL DEFAULT 0,
+  passed INTEGER NOT NULL DEFAULT 0,
+  reason TEXT NOT NULL DEFAULT '',
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  UNIQUE(concept_id, exam_type),
+  FOREIGN KEY (concept_id) REFERENCES concepts(id)
+)
+alai_concept_competencies|CREATE TABLE alai_concept_competencies (
+  id TEXT PRIMARY KEY,
+  concept_id TEXT NOT NULL UNIQUE,
+  definition_score REAL NOT NULL DEFAULT 0,
+  example_score REAL NOT NULL DEFAULT 0,
+  relation_score REAL NOT NULL DEFAULT 0,
+  question_score REAL NOT NULL DEFAULT 0,
+  teaching_score REAL NOT NULL DEFAULT 0,
+  competency_score REAL NOT NULL DEFAULT 0,
+  status TEXT NOT NULL DEFAULT 'DEVELOPING',
+  reason TEXT NOT NULL DEFAULT '',
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  FOREIGN KEY (concept_id) REFERENCES concepts(id)
+)
+alai_concept_self_tests|CREATE TABLE alai_concept_self_tests (
+  id TEXT PRIMARY KEY,
+  concept_id TEXT NOT NULL,
+  test_type TEXT NOT NULL,
+  prompt TEXT NOT NULL,
+  answer TEXT NOT NULL DEFAULT '',
+  score REAL NOT NULL DEFAULT 0,
+  passed INTEGER NOT NULL DEFAULT 0,
+  reason TEXT NOT NULL DEFAULT '',
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  UNIQUE(concept_id, test_type),
+  FOREIGN KEY (concept_id) REFERENCES concepts(id)
+)
+alai_current_state|CREATE TABLE alai_current_state (
+  id TEXT PRIMARY KEY,
+  current_growth_stage_id TEXT NOT NULL,
+  current_education_ladder_id TEXT,
+  progress_score REAL NOT NULL DEFAULT 0,
+  is_locked INTEGER NOT NULL DEFAULT 0,
+  notes TEXT NOT NULL DEFAULT '',
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  FOREIGN KEY (current_growth_stage_id) REFERENCES alai_growth_stage(id),
+  FOREIGN KEY (current_education_ladder_id) REFERENCES education_ladder(id)
+)
+alai_discovered_gaps|CREATE TABLE alai_discovered_gaps (
+  id TEXT PRIMARY KEY,
+  source_type TEXT NOT NULL,
+  source_id TEXT NOT NULL,
+  gap_title TEXT NOT NULL,
+  gap_description TEXT NOT NULL DEFAULT '',
+  severity TEXT NOT NULL DEFAULT 'MEDIUM',
+  status TEXT NOT NULL DEFAULT 'OPEN',
+  priority_score REAL NOT NULL DEFAULT 0.5,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  UNIQUE(source_type, source_id, gap_title)
+)
+alai_evidence_grounded_exams|CREATE TABLE alai_evidence_grounded_exams (
+  id TEXT PRIMARY KEY,
+  concept_id TEXT NOT NULL,
+  evidence_ids_json TEXT NOT NULL DEFAULT '[]',
+  prompt TEXT NOT NULL,
+  answer TEXT NOT NULL DEFAULT '',
+  score REAL NOT NULL DEFAULT 0,
+  passed INTEGER NOT NULL DEFAULT 0,
+  reason TEXT NOT NULL DEFAULT '',
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  UNIQUE(concept_id),
+  FOREIGN KEY (concept_id) REFERENCES concepts(id)
+)
+alai_evidence_verification|CREATE TABLE alai_evidence_verification (
+  id TEXT PRIMARY KEY,
+  evidence_id TEXT NOT NULL UNIQUE,
+  verification_status TEXT NOT NULL DEFAULT 'PENDING',
+  verification_score REAL NOT NULL DEFAULT 0,
+  reason TEXT NOT NULL DEFAULT '',
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  FOREIGN KEY (evidence_id) REFERENCES evidence(id)
+)
+alai_expansion_gate|CREATE TABLE alai_expansion_gate (
+  id TEXT PRIMARY KEY,
+  topic_id TEXT NOT NULL UNIQUE,
+  allowed INTEGER NOT NULL DEFAULT 0,
+  gate_score REAL NOT NULL DEFAULT 0,
+  reason TEXT NOT NULL DEFAULT '',
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  FOREIGN KEY (topic_id) REFERENCES curriculum_topics(id)
+)
+alai_growth_stage|CREATE TABLE alai_growth_stage (
+  id TEXT PRIMARY KEY,
+  stage_name TEXT NOT NULL UNIQUE,
+  stage_order INTEGER NOT NULL UNIQUE,
+  description TEXT NOT NULL DEFAULT '',
+  unlock_condition TEXT NOT NULL DEFAULT '',
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+)
+alai_learning_objectives|CREATE TABLE alai_learning_objectives (
+  id TEXT PRIMARY KEY,
+  topic_id TEXT NOT NULL,
+  title TEXT NOT NULL,
+  objective_type TEXT NOT NULL DEFAULT 'TOPIC_MASTERY',
+  status TEXT NOT NULL DEFAULT 'OPEN',
+  priority_score REAL NOT NULL DEFAULT 0.5,
+  mastery_target REAL NOT NULL DEFAULT 0.7,
+  attempts INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  UNIQUE(topic_id, title),
+  FOREIGN KEY (topic_id) REFERENCES curriculum_topics(id)
+)
+alai_mastery_validations|CREATE TABLE alai_mastery_validations (
+  id TEXT PRIMARY KEY,
+  concept_id TEXT NOT NULL,
+  validation_type TEXT NOT NULL,
+  passed INTEGER NOT NULL DEFAULT 0,
+  score REAL NOT NULL DEFAULT 0,
+  reason TEXT NOT NULL DEFAULT '',
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  UNIQUE(concept_id, validation_type),
+  FOREIGN KEY (concept_id) REFERENCES concepts(id)
+)
+alai_quality_flags|CREATE TABLE alai_quality_flags (
+  id TEXT PRIMARY KEY,
+  target_type TEXT NOT NULL,
+  target_id TEXT NOT NULL,
+  issue_type TEXT NOT NULL,
+  severity TEXT NOT NULL DEFAULT 'MEDIUM',
+  message TEXT NOT NULL DEFAULT '',
+  status TEXT NOT NULL DEFAULT 'OPEN',
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  UNIQUE(target_type, target_id, issue_type)
+)
+alai_question_answers|CREATE TABLE alai_question_answers (
+  id TEXT PRIMARY KEY,
+  question_id TEXT NOT NULL UNIQUE,
+  answer TEXT NOT NULL,
+  evidence_id TEXT,
+  confidence_score REAL NOT NULL DEFAULT 0.4,
+  status TEXT NOT NULL DEFAULT 'ANSWERED',
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  FOREIGN KEY (question_id) REFERENCES alai_self_questions(id),
+  FOREIGN KEY (evidence_id) REFERENCES evidence(id)
+)
+alai_self_questions|CREATE TABLE alai_self_questions (
+  id TEXT PRIMARY KEY,
+  topic_id TEXT,
+  concept_id TEXT,
+  question TEXT NOT NULL,
+  question_type TEXT NOT NULL DEFAULT 'UNDERSTANDING',
+  status TEXT NOT NULL DEFAULT 'OPEN',
+  priority_score REAL NOT NULL DEFAULT 0.5,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  UNIQUE(topic_id, concept_id, question)
+)
+alai_stage_requirements|CREATE TABLE alai_stage_requirements (
+  id TEXT PRIMARY KEY,
+  growth_stage_id TEXT NOT NULL,
+  requirement_key TEXT NOT NULL,
+  requirement_description TEXT NOT NULL,
+  required_score REAL NOT NULL DEFAULT 0,
+  current_score REAL NOT NULL DEFAULT 0,
+  passed INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  UNIQUE(growth_stage_id, requirement_key),
+  FOREIGN KEY (growth_stage_id) REFERENCES alai_growth_stage(id)
+)
+autonomous_learning_queue|CREATE TABLE autonomous_learning_queue (
+  id TEXT PRIMARY KEY,
+  target_type TEXT NOT NULL,
+  target_id TEXT,
+  objective TEXT NOT NULL,
+  priority_score REAL NOT NULL DEFAULT 0.5,
+  status TEXT NOT NULL DEFAULT 'OPEN',
+  attempts INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+)
+capabilities|CREATE TABLE capabilities (
+  id TEXT PRIMARY KEY,
+  concept_id TEXT NOT NULL,
+  capability_type TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  mastery_score REAL NOT NULL DEFAULT 0,
+  last_tested_at TEXT,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  FOREIGN KEY (concept_id) REFERENCES concepts(id) ON DELETE CASCADE
+)
+common_errors|CREATE TABLE common_errors (
+  id TEXT PRIMARY KEY,
+  concept_id TEXT NOT NULL,
+  error_description TEXT NOT NULL,
+  correction TEXT NOT NULL DEFAULT '',
+  frequency_score REAL NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  FOREIGN KEY (concept_id) REFERENCES concepts(id) ON DELETE CASCADE
+)
+concept_aliases|CREATE TABLE concept_aliases (
+  id TEXT PRIMARY KEY,
+  concept_id TEXT NOT NULL,
+  alias TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  FOREIGN KEY (concept_id) REFERENCES concepts(id) ON DELETE CASCADE
+)
+concept_evidence|CREATE TABLE concept_evidence (
+  concept_id TEXT NOT NULL,
+  evidence_id TEXT NOT NULL,
+  PRIMARY KEY (concept_id, evidence_id),
+  FOREIGN KEY (concept_id) REFERENCES concepts(id) ON DELETE CASCADE,
+  FOREIGN KEY (evidence_id) REFERENCES evidence(id) ON DELETE CASCADE
+)
+concept_evidence_links|CREATE TABLE concept_evidence_links (
+  evidence_id TEXT NOT NULL,
+  concept_id TEXT NOT NULL,
+  confidence_score REAL NOT NULL DEFAULT 0.35,
+  created_at TEXT NOT NULL,
+  PRIMARY KEY (evidence_id, concept_id),
+  FOREIGN KEY (evidence_id) REFERENCES evidence(id),
+  FOREIGN KEY (concept_id) REFERENCES concepts(id)
+)
+concept_mastery|CREATE TABLE concept_mastery (
+  id TEXT PRIMARY KEY,
+  concept_id TEXT NOT NULL UNIQUE,
+  mastery_score REAL NOT NULL DEFAULT 0,
+  evidence_count INTEGER NOT NULL DEFAULT 0,
+  relation_count INTEGER NOT NULL DEFAULT 0,
+  contradiction_count INTEGER NOT NULL DEFAULT 0,
+  last_calculated_at TEXT,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  FOREIGN KEY (concept_id) REFERENCES concepts(id)
+)
+concept_prerequisites|CREATE TABLE concept_prerequisites (
+  concept_id TEXT NOT NULL,
+  prerequisite_concept_id TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  PRIMARY KEY (concept_id, prerequisite_concept_id),
+  FOREIGN KEY (concept_id) REFERENCES concepts(id),
+  FOREIGN KEY (prerequisite_concept_id) REFERENCES concepts(id)
+)
+concept_stage_flags|CREATE TABLE concept_stage_flags (
+  concept_id TEXT PRIMARY KEY,
+  stage TEXT NOT NULL,
+  reason TEXT NOT NULL DEFAULT '',
+  status TEXT NOT NULL DEFAULT 'ACTIVE',
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  FOREIGN KEY (concept_id) REFERENCES concepts(id)
+)
+concepts|CREATE TABLE concepts (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  status TEXT NOT NULL DEFAULT 'PENDING',
+  confidence_score REAL NOT NULL DEFAULT 0,
+  uncertainty_score REAL NOT NULL DEFAULT 1,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+)
+curriculum_completion|CREATE TABLE curriculum_completion (
+  id TEXT PRIMARY KEY,
+  domain_id TEXT NOT NULL UNIQUE,
+  mapped_child_domains INTEGER NOT NULL DEFAULT 0,
+  total_child_domains INTEGER NOT NULL DEFAULT 0,
+  mapped_topics INTEGER NOT NULL DEFAULT 0,
+  total_topics INTEGER NOT NULL DEFAULT 0,
+  mapped_concepts INTEGER NOT NULL DEFAULT 0,
+  completion_score REAL NOT NULL DEFAULT 0,
+  known_coverage_score REAL NOT NULL DEFAULT 0,
+  effective_coverage_score REAL NOT NULL DEFAULT 0,
+  last_calculated_at TEXT,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  FOREIGN KEY (domain_id) REFERENCES academic_domains(id)
+)
+curriculum_coverage|CREATE TABLE curriculum_coverage (
+  id TEXT PRIMARY KEY,
+  topic_id TEXT NOT NULL UNIQUE,
+  concepts_total INTEGER NOT NULL DEFAULT 0,
+  concepts_mastered INTEGER NOT NULL DEFAULT 0,
+  average_mastery REAL NOT NULL DEFAULT 0,
+  coverage_score REAL NOT NULL DEFAULT 0,
+  last_calculated_at TEXT,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  FOREIGN KEY (topic_id) REFERENCES curriculum_topics(id)
+)
+curriculum_taxonomy_audit|CREATE TABLE curriculum_taxonomy_audit (
+  id TEXT PRIMARY KEY,
+  entity_type TEXT NOT NULL,
+  entity_id TEXT NOT NULL,
+  issue_type TEXT NOT NULL,
+  severity TEXT NOT NULL,
+  description TEXT NOT NULL,
+  recommended_action TEXT NOT NULL DEFAULT '',
+  created_at TEXT NOT NULL,
+  resolved_at TEXT
+)
+curriculum_taxonomy_rules|CREATE TABLE curriculum_taxonomy_rules (
+  id TEXT PRIMARY KEY,
+  rule_name TEXT NOT NULL UNIQUE,
+  rule_type TEXT NOT NULL,
+  enabled INTEGER NOT NULL DEFAULT 1,
+  created_at TEXT NOT NULL
+)
+curriculum_topics|CREATE TABLE curriculum_topics (
+  id TEXT PRIMARY KEY,
+  education_level_id TEXT,
+  domain_id TEXT,
+  parent_topic_id TEXT,
+  name TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  depth INTEGER NOT NULL DEFAULT 0,
+  status TEXT NOT NULL DEFAULT 'PENDING',
+  confidence_score REAL NOT NULL DEFAULT 0.25,
+  expansion_status TEXT NOT NULL DEFAULT 'OPEN',
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  FOREIGN KEY (education_level_id) REFERENCES education_levels(id) ON DELETE SET NULL,
+  FOREIGN KEY (domain_id) REFERENCES academic_domains(id) ON DELETE SET NULL,
+  FOREIGN KEY (parent_topic_id) REFERENCES curriculum_topics(id) ON DELETE SET NULL
+)
+domain_coverage_rollup|CREATE TABLE domain_coverage_rollup (
+  id TEXT PRIMARY KEY,
+  domain_id TEXT NOT NULL UNIQUE,
+  rollup_coverage_score REAL NOT NULL DEFAULT 0,
+  child_domains_count INTEGER NOT NULL DEFAULT 0,
+  topics_count INTEGER NOT NULL DEFAULT 0,
+  concepts_total INTEGER NOT NULL DEFAULT 0,
+  concepts_mastered INTEGER NOT NULL DEFAULT 0,
+  last_calculated_at TEXT,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  FOREIGN KEY (domain_id) REFERENCES academic_domains(id)
+)
+education_ladder|CREATE TABLE education_ladder (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL UNIQUE,
+  stage_order INTEGER NOT NULL UNIQUE,
+  min_age INTEGER,
+  max_age INTEGER,
+  description TEXT NOT NULL DEFAULT '',
+  autonomy_goal TEXT NOT NULL DEFAULT '',
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+)
+education_levels|CREATE TABLE education_levels (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL UNIQUE,
+  order_index INTEGER NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+)
+evidence|CREATE TABLE evidence (
+  id TEXT PRIMARY KEY,
+  source_type TEXT NOT NULL,
+  source_name TEXT NOT NULL,
+  source_url TEXT,
+  content_summary TEXT NOT NULL DEFAULT '',
+  reliability_score REAL NOT NULL DEFAULT 0,
+  captured_at TEXT NOT NULL
+)
+knowledge_gaps|CREATE TABLE knowledge_gaps (
+  id TEXT PRIMARY KEY,
+  concept_id TEXT,
+  gap_description TEXT NOT NULL,
+  priority_score REAL NOT NULL DEFAULT 0,
+  status TEXT NOT NULL DEFAULT 'OPEN',
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  FOREIGN KEY (concept_id) REFERENCES concepts(id) ON DELETE SET NULL
+)
+language_feedback|CREATE TABLE language_feedback (
+  id TEXT PRIMARY KEY,
+  user_instruction TEXT NOT NULL,
+  previous_response TEXT NOT NULL DEFAULT '',
+  improved_response TEXT NOT NULL DEFAULT '',
+  feedback_summary TEXT NOT NULL DEFAULT '',
+  learned_pattern_id TEXT,
+  created_at TEXT NOT NULL,
+  FOREIGN KEY (learned_pattern_id) REFERENCES language_patterns(id) ON DELETE SET NULL
+)
+language_patterns|CREATE TABLE language_patterns (
+  id TEXT PRIMARY KEY,
+  pattern_type TEXT NOT NULL,
+  instruction TEXT NOT NULL,
+  input_example TEXT NOT NULL DEFAULT '',
+  output_example TEXT NOT NULL DEFAULT '',
+  style_summary TEXT NOT NULL DEFAULT '',
+  confidence_score REAL NOT NULL DEFAULT 0.25,
+  usage_count INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+)
+language_phrases|CREATE TABLE language_phrases (
+  id TEXT PRIMARY KEY,
+  source_language TEXT NOT NULL,
+  target_language TEXT NOT NULL,
+  source_phrase TEXT NOT NULL,
+  target_phrase TEXT NOT NULL,
+  phrase_type TEXT NOT NULL DEFAULT 'DOMAIN',
+  confidence_score REAL NOT NULL DEFAULT 0.35,
+  usage_count INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+)
+language_skill_relations|CREATE TABLE language_skill_relations (
+  id TEXT PRIMARY KEY,
+  from_skill_id TEXT NOT NULL,
+  to_skill_id TEXT NOT NULL,
+  relation_type TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  confidence_score REAL NOT NULL DEFAULT 0.25,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  FOREIGN KEY (from_skill_id) REFERENCES language_skills(id) ON DELETE CASCADE,
+  FOREIGN KEY (to_skill_id) REFERENCES language_skills(id) ON DELETE CASCADE
+)
+language_skills|CREATE TABLE language_skills (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  skill_type TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  confidence_score REAL NOT NULL DEFAULT 0.25,
+  usage_count INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+)
+language_strategies|CREATE TABLE language_strategies (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  confidence_score REAL NOT NULL DEFAULT 0.35,
+  usage_count INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+)
+language_strategy_relations|CREATE TABLE language_strategy_relations (
+  id TEXT PRIMARY KEY,
+  strategy_id TEXT NOT NULL,
+  skill_id TEXT NOT NULL,
+  relation_type TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  confidence_score REAL NOT NULL DEFAULT 0.35,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  FOREIGN KEY (strategy_id) REFERENCES language_strategies(id) ON DELETE CASCADE,
+  FOREIGN KEY (skill_id) REFERENCES language_skills(id) ON DELETE CASCADE
+)
+learning_events|CREATE TABLE learning_events (
+  id TEXT PRIMARY KEY,
+  event_type TEXT NOT NULL,
+  trigger_source TEXT NOT NULL,
+  summary TEXT NOT NULL,
+  confidence_before REAL,
+  confidence_after REAL,
+  created_at TEXT NOT NULL
+)
+learning_path|CREATE TABLE learning_path (
+  id TEXT PRIMARY KEY,
+  source_topic_id TEXT NOT NULL,
+  target_topic_id TEXT NOT NULL,
+  missing_topics INTEGER NOT NULL DEFAULT 0,
+  estimated_steps INTEGER NOT NULL DEFAULT 0,
+  path_json TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  UNIQUE(source_topic_id, target_topic_id),
+  FOREIGN KEY (source_topic_id) REFERENCES curriculum_topics(id),
+  FOREIGN KEY (target_topic_id) REFERENCES curriculum_topics(id)
+)
+relations|CREATE TABLE relations (
+  id TEXT PRIMARY KEY,
+  from_concept_id TEXT NOT NULL,
+  to_concept_id TEXT NOT NULL,
+  relation_type TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  confidence_score REAL NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  FOREIGN KEY (from_concept_id) REFERENCES concepts(id) ON DELETE CASCADE,
+  FOREIGN KEY (to_concept_id) REFERENCES concepts(id) ON DELETE CASCADE
+)
+topic_concepts|CREATE TABLE topic_concepts (
+  topic_id TEXT NOT NULL,
+  concept_id TEXT NOT NULL,
+  confidence_score REAL NOT NULL DEFAULT 0.35,
+  created_at TEXT NOT NULL,
+  PRIMARY KEY (topic_id, concept_id),
+  FOREIGN KEY (topic_id) REFERENCES curriculum_topics(id) ON DELETE CASCADE,
+  FOREIGN KEY (concept_id) REFERENCES concepts(id) ON DELETE CASCADE
+)
+topic_coverage_rollup|CREATE TABLE topic_coverage_rollup (
+  id TEXT PRIMARY KEY,
+  topic_id TEXT NOT NULL UNIQUE,
+  direct_coverage_score REAL NOT NULL DEFAULT 0,
+  rollup_coverage_score REAL NOT NULL DEFAULT 0,
+  child_topics_count INTEGER NOT NULL DEFAULT 0,
+  descendant_topics_count INTEGER NOT NULL DEFAULT 0,
+  concepts_total INTEGER NOT NULL DEFAULT 0,
+  concepts_mastered INTEGER NOT NULL DEFAULT 0,
+  last_calculated_at TEXT,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  FOREIGN KEY (topic_id) REFERENCES curriculum_topics(id)
+)
+topic_prerequisites|CREATE TABLE topic_prerequisites (
+  topic_id TEXT NOT NULL,
+  prerequisite_topic_id TEXT NOT NULL,
+  confidence_score REAL NOT NULL DEFAULT 0.35,
+  created_at TEXT NOT NULL,
+  PRIMARY KEY (topic_id, prerequisite_topic_id),
+  FOREIGN KEY (topic_id) REFERENCES curriculum_topics(id) ON DELETE CASCADE,
+  FOREIGN KEY (prerequisite_topic_id) REFERENCES curriculum_topics(id) ON DELETE CASCADE
+)

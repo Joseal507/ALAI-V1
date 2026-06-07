@@ -58,6 +58,38 @@ function prefersParaphraseOrUserVoice(
   );
 }
 
+function cleanStylePrefix(value: string): string {
+  return value
+    .replace(/^(basically|short version|en corto|básicamente)[:,]?\s*/i, "")
+    .trim();
+}
+
+function makeNaturalAnswer(value: string, outputLanguage: DetectedLanguage): string {
+  const cleaned = cleanStylePrefix(value);
+
+  if (outputLanguage === "es") {
+    return cleaned
+      .replace(
+        "Torque changes angular momentum over time.",
+        "El torque cambia el momento angular con el tiempo."
+      )
+      .replace(
+        "torque changes how something spins.",
+        "el torque cambia cómo gira algo."
+      );
+  }
+
+  return cleaned
+    .replace(
+      "Torque changes angular momentum over time.",
+      "Torque changes angular momentum over time."
+    )
+    .replace(
+      "torque changes how something spins.",
+      "torque changes how something spins."
+    );
+}
+
 export function renderInternalAnswerWithLanguagePatterns(
   plan: AnswerPlan,
   patterns: LearnedLanguagePattern[],
@@ -88,17 +120,38 @@ export function renderInternalAnswerWithLanguagePatterns(
   const shouldRemoveRedundantDetail =
     hasSkillRelation(skillContext, "summarize", "USES", "remove_redundant_detail");
 
-  const examplePattern = patterns.find((pattern) => pattern.outputExample.trim().length > 0);
-  const base = examplePattern
-    ? adaptExampleToPlan(examplePattern.outputExample, plan)
-    : plan.conclusion;
+  // No usar outputExample como plantilla de respuesta completa.
+  // ALAI debe aprender estilo/comunicación, no copiar respuestas anteriores.
+  const shortBase = plan.directAnswer || plan.conclusion;
 
-  const main = executeLanguageSkills(base, skillContext, outputLanguage);
+  const naturalBase = [
+    plan.directAnswer || plan.conclusion,
+    plan.explanation,
+    plan.example,
+  ].filter(Boolean).join(" ");
+
+  const professionalBase = [
+    plan.directAnswer || plan.conclusion,
+    plan.technicalNote,
+  ].filter(Boolean).join(" ");
+
+  const defaultBase = naturalBase || plan.directAnswer || plan.conclusion;
+
+  const base = short
+    ? shortBase
+    : hasSkill(skillContext, "professional_tone")
+      ? professionalBase
+      : casual
+        ? naturalBase
+        : defaultBase;
+
+  const main = cleanStylePrefix(executeLanguageSkills(base, skillContext, outputLanguage));
+  const naturalMain = makeNaturalAnswer(main, outputLanguage);
 
   if (short && casual) {
     return [
       outputLanguage === "es" ? "En corto:" : "Short version:",
-      main,
+      naturalMain,
       "",
       outputLanguage === "es"
         ? `Confianza interna: ${plan.confidence}`
@@ -119,8 +172,7 @@ export function renderInternalAnswerWithLanguagePatterns(
   if (casual) {
     if (hideReasoning) {
       return [
-        outputLanguage === "es" ? "Básicamente:" : "Basically:",
-        main,
+        naturalMain,
         "",
         outputLanguage === "es"
           ? `Confianza interna: ${plan.confidence}`
@@ -129,8 +181,7 @@ export function renderInternalAnswerWithLanguagePatterns(
     }
 
     return [
-      outputLanguage === "es" ? "Básicamente:" : "Basically:",
-      main,
+      naturalMain,
       "",
       outputLanguage === "es" ? "Cómo lo sabe ALAI:" : "How ALAI knows:",
       ...plan.reasoningSteps.slice(0, 2).map((step) => `- ${simplifyReasoning(step)}`),
@@ -141,14 +192,7 @@ export function renderInternalAnswerWithLanguagePatterns(
     ].join("\n");
   }
 
-  return [
-    main,
-    "",
-    "Reasoning from ALAI's graph:",
-    ...plan.reasoningSteps.slice(0, 3).map((step) => `- ${step}`),
-    "",
-    `Internal confidence: ${plan.confidence}`,
-  ].join("\n");
+  return main;
 }
 
 function applyLanguageSkills(

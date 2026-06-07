@@ -208,6 +208,85 @@ CREATE TABLE IF NOT EXISTS language_strategy_relations (
 CREATE INDEX IF NOT EXISTS idx_language_strategies_name ON language_strategies(name);
 CREATE INDEX IF NOT EXISTS idx_language_strategy_relations_strategy ON language_strategy_relations(strategy_id);
 CREATE INDEX IF NOT EXISTS idx_language_strategy_relations_skill ON language_strategy_relations(skill_id);
+
+
+CREATE TABLE IF NOT EXISTS education_levels (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL UNIQUE,
+  order_index INTEGER NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS academic_domains (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  parent_domain_id TEXT,
+  description TEXT NOT NULL DEFAULT '',
+  depth INTEGER NOT NULL DEFAULT 0,
+  status TEXT NOT NULL DEFAULT 'PENDING',
+  confidence_score REAL NOT NULL DEFAULT 0.25,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  FOREIGN KEY (parent_domain_id) REFERENCES academic_domains(id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS curriculum_topics (
+  id TEXT PRIMARY KEY,
+  education_level_id TEXT,
+  domain_id TEXT,
+  parent_topic_id TEXT,
+  name TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  depth INTEGER NOT NULL DEFAULT 0,
+  status TEXT NOT NULL DEFAULT 'PENDING',
+  confidence_score REAL NOT NULL DEFAULT 0.25,
+  expansion_status TEXT NOT NULL DEFAULT 'OPEN',
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  FOREIGN KEY (education_level_id) REFERENCES education_levels(id) ON DELETE SET NULL,
+  FOREIGN KEY (domain_id) REFERENCES academic_domains(id) ON DELETE SET NULL,
+  FOREIGN KEY (parent_topic_id) REFERENCES curriculum_topics(id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS topic_prerequisites (
+  topic_id TEXT NOT NULL,
+  prerequisite_topic_id TEXT NOT NULL,
+  confidence_score REAL NOT NULL DEFAULT 0.35,
+  created_at TEXT NOT NULL,
+  PRIMARY KEY (topic_id, prerequisite_topic_id),
+  FOREIGN KEY (topic_id) REFERENCES curriculum_topics(id) ON DELETE CASCADE,
+  FOREIGN KEY (prerequisite_topic_id) REFERENCES curriculum_topics(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS topic_concepts (
+  topic_id TEXT NOT NULL,
+  concept_id TEXT NOT NULL,
+  confidence_score REAL NOT NULL DEFAULT 0.35,
+  created_at TEXT NOT NULL,
+  PRIMARY KEY (topic_id, concept_id),
+  FOREIGN KEY (topic_id) REFERENCES curriculum_topics(id) ON DELETE CASCADE,
+  FOREIGN KEY (concept_id) REFERENCES concepts(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS autonomous_learning_queue (
+  id TEXT PRIMARY KEY,
+  target_type TEXT NOT NULL,
+  target_id TEXT,
+  objective TEXT NOT NULL,
+  priority_score REAL NOT NULL DEFAULT 0.5,
+  status TEXT NOT NULL DEFAULT 'OPEN',
+  attempts INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_academic_domains_parent ON academic_domains(parent_domain_id);
+CREATE INDEX IF NOT EXISTS idx_curriculum_topics_parent ON curriculum_topics(parent_topic_id);
+CREATE INDEX IF NOT EXISTS idx_curriculum_topics_level ON curriculum_topics(education_level_id);
+CREATE INDEX IF NOT EXISTS idx_curriculum_topics_domain ON curriculum_topics(domain_id);
+CREATE INDEX IF NOT EXISTS idx_autonomous_learning_queue_status ON autonomous_learning_queue(status);
 `);
 
 console.log("ALAI database initialized at data/alai.db");

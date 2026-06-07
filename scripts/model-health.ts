@@ -1,71 +1,67 @@
 import Database from "better-sqlite3";
-import { rankConcept } from "../src/learning/concept-rank-engine";
 
 const db = new Database("data/alai.db");
 
-const concepts = db.prepare(`
-  SELECT id, name, description, status
-  FROM concepts
-`).all() as { id: string; name: string; description: string; status: string }[];
+const concepts = db.prepare(`SELECT COUNT(*) AS count FROM concepts`).get() as { count: number };
+const relations = db.prepare(`SELECT COUNT(*) AS count FROM relations`).get() as { count: number };
+const verified = db.prepare(`SELECT COUNT(*) AS count FROM concepts WHERE status = 'VERIFIED'`).get() as { count: number };
+const pending = db.prepare(`SELECT COUNT(*) AS count FROM concepts WHERE status = 'PENDING'`).get() as { count: number };
 
-const relations = db.prepare(`
-  SELECT id, relation_type AS relationType, from_concept_id, to_concept_id
-  FROM relations
-`).all() as { id: string; relationType: string; from_concept_id: string; to_concept_id: string }[];
+const openConceptFlags = db.prepare(`
+  SELECT COUNT(*) AS count
+  FROM alai_quality_flags
+  WHERE target_type = 'CONCEPT'
+    AND status = 'OPEN'
+`).get() as { count: number };
 
 const duplicateRelations = db.prepare(`
   SELECT COUNT(*) AS count
   FROM (
-    SELECT from_concept_id, to_concept_id, relation_type
+    SELECT from_concept_id, to_concept_id, relation_type, COUNT(*) AS c
     FROM relations
     GROUP BY from_concept_id, to_concept_id, relation_type
     HAVING COUNT(*) > 1
   )
 `).get() as { count: number };
 
-const conceptRanks = concepts.map((concept) => ({
-  ...concept,
-  rank: rankConcept(concept.name, concept.description),
-}));
+const strictMastered = db.prepare(`
+  SELECT COUNT(*) AS count
+  FROM concept_mastery cm
+  JOIN concepts c ON c.id = cm.concept_id
+  WHERE c.status IN ('VERIFIED', 'CANONICAL')
+    AND cm.mastery_score >= 0.82
+`).get() as { count: number };
 
-const core = conceptRanks.filter((c) => c.rank === "CORE").length;
-const supporting = conceptRanks.filter((c) => c.rank === "SUPPORTING").length;
-const noise = conceptRanks.filter((c) => c.rank === "NOISE").length;
-const verified = concepts.filter((c) => c.status === "VERIFIED").length;
-const pending = concepts.filter((c) => c.status === "PENDING").length;
+const activeDomains = db.prepare(`
+  SELECT
+    d.name,
+    COALESCE(c.completion_score, 0) AS completion,
+    COALESCE(c.effective_coverage_score, 0) AS effective
+  FROM academic_domains d
+  LEFT JOIN curriculum_completion c ON c.domain_id = d.id
+  WHERE d.name IN ('Foundational Learning', 'Primary Foundations', 'Algebra', 'Mathematics')
+`).all() as { name: string; completion: number; effective: number }[];
 
-const score = Math.max(
-  0,
-  Math.min(
-    100,
-    Math.round(
-      50 +
-      verified * 4 +
-      core * 2 +
-      supporting * 0.5 -
-      noise * 3 -
-      duplicateRelations.count * 4
-    )
-  )
-);
+const algebra = activeDomains.find((d) => d.name === "Algebra");
+const verifiedRatio = concepts.count === 0 ? 0 : verified.count / concepts.count;
+
+let score = 100;
+score -= Math.min(25, openConceptFlags.count * 0.1);
+score -= Math.min(20, duplicateRelations.count * 5);
+score -= verifiedRatio < 0.2 ? 20 : 0;
+score -= algebra && algebra.effective < 0.1 ? 20 : 0;
+score = Math.max(0, Math.round(score));
 
 console.log("\n=== ALAI World Model Health ===");
 console.log({
-  concepts: concepts.length,
-  relations: relations.length,
-  coreConcepts: core,
-  supportingConcepts: supporting,
-  noiseConcepts: noise,
-  verifiedConcepts: verified,
-  pendingConcepts: pending,
+  concepts: concepts.count,
+  relations: relations.count,
+  verifiedConcepts: verified.count,
+  pendingConcepts: pending.count,
+  strictMasteredConcepts: strictMastered.count,
+  verifiedRatio: Number(verifiedRatio.toFixed(3)),
+  activeDomains,
+  openConceptFlags: openConceptFlags.count,
   duplicateRelationGroups: duplicateRelations.count,
   healthScore: `${score}/100`,
 });
-
-if (noise > 0) {
-  console.log("\nNoise concepts:");
-  console.table(conceptRanks.filter((c) => c.rank === "NOISE").map((c) => ({
-    name: c.name,
-    status: c.status,
-  })));
-}

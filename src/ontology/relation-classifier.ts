@@ -8,8 +8,13 @@ export type OntologyRelationType =
   | "ALIAS_OF"
   | "ANALOG_OF"
   | "USED_FOR"
+  | "USES"
+  | "SUPPORTS"
+  | "FOUNDATION_FOR"
+  | "PREREQUISITE_FOR"
   | "EXPLAINS"
   | "FORMULA_RELATION"
+  | "DEFINES"
   | "INDIRECTLY_DEPENDS_ON"
   | "INDIRECTLY_RELATED_TO"
   | "CONTRIBUTES_TO";
@@ -134,8 +139,13 @@ export function classifyRelationOntology(
     rawType === "DEPENDS_ON" ||
     rawType === "RELATED_TO" ||
     rawType === "USED_FOR" ||
+    rawType === "USES" ||
+    rawType === "SUPPORTS" ||
+    rawType === "FOUNDATION_FOR" ||
+    rawType === "PREREQUISITE_FOR" ||
     rawType === "EXPLAINS" ||
     rawType === "FORMULA_RELATION" ||
+    rawType === "DEFINES" ||
     rawType === "CONTRIBUTES_TO" ||
     rawType === "INDIRECTLY_DEPENDS_ON" ||
     rawType === "INDIRECTLY_RELATED_TO"

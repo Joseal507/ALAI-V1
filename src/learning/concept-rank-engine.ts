@@ -26,6 +26,26 @@ export function rankConcept(name: string, description: string): ConceptRank {
   if (NOISE_CONCEPTS.has(normalized)) return "NOISE";
 
   if (
+    normalized.includes("matrix") ||
+    normalized.includes("proof") ||
+    normalized.includes("prime factorization") ||
+    normalized.includes("fundamental theorem of arithmetic") ||
+    normalized.includes("numeracy") ||
+    normalized.includes("academic writing") ||
+    normalized.includes("reading development") ||
+    normalized.includes("writing development") ||
+    normalized.includes("machine learning") ||
+    normalized.includes("artificial intelligence") ||
+    normalized.includes("abstract algebra") ||
+    normalized.includes("applied mathematics") ||
+    normalized.includes("analysis") ||
+    normalized.includes("angle") ||
+    normalized.includes("geometric measurement") ||
+    normalized.includes("technology") ||
+    normalized.includes("mathematics") ||
+    normalized.includes("language") ||
+    normalized.includes("history") ||
+    normalized.includes("science") ||
     normalized.includes("torque") ||
     normalized.includes("angular momentum") ||
     normalized.includes("photosynthesis") ||
@@ -46,6 +66,27 @@ export function rankConcept(name: string, description: string): ConceptRank {
   }
 
   if (description.toLowerCase().includes("concept discovered during")) {
+    const usefulTerms = [
+      "linear",
+      "vector",
+      "algebra",
+      "geometry",
+      "number",
+      "reading",
+      "writing",
+      "education",
+      "learning",
+      "grammar",
+      "phonics",
+      "arithmetic",
+      "science",
+      "measurement",
+    ];
+
+    if (!usefulTerms.some((term) => normalized.includes(term))) {
+      return "NOISE";
+    }
+
     return "SUPPORTING";
   }
 

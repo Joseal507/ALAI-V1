@@ -160,6 +160,39 @@ const tx = db.transaction((item: AliasRelation) => {
     WHERE concept_id = ?
   `).run(choice.canonicalId, choice.aliasId);
 
+  const conceptReferenceUpdates: Array<[string, string]> = [
+    ["alai_autonomous_exams", "concept_id"],
+    ["alai_concept_competencies", "concept_id"],
+    ["alai_concept_self_tests", "concept_id"],
+    ["alai_evidence_grounded_exams", "concept_id"],
+    ["alai_mastery_validations", "concept_id"],
+    ["common_errors", "concept_id"],
+    ["concept_evidence_links", "concept_id"],
+    ["concept_mastery", "concept_id"],
+    ["concept_stage_flags", "concept_id"],
+    ["topic_concepts", "concept_id"],
+  ];
+
+  for (const [table, column] of conceptReferenceUpdates) {
+    db.prepare(`
+      UPDATE OR IGNORE ${table}
+      SET ${column} = ?
+      WHERE ${column} = ?
+    `).run(choice.canonicalId, choice.aliasId);
+  }
+
+  db.prepare(`
+    UPDATE OR IGNORE concept_prerequisites
+    SET concept_id = ?
+    WHERE concept_id = ?
+  `).run(choice.canonicalId, choice.aliasId);
+
+  db.prepare(`
+    UPDATE OR IGNORE concept_prerequisites
+    SET prerequisite_concept_id = ?
+    WHERE prerequisite_concept_id = ?
+  `).run(choice.canonicalId, choice.aliasId);
+
   db.prepare(`
     UPDATE relations
     SET from_concept_id = ?
@@ -177,6 +210,38 @@ const tx = db.transaction((item: AliasRelation) => {
     WHERE from_concept_id = to_concept_id
        OR id = ?
   `).run(item.relationId);
+
+  const conceptReferenceDeletes: Array<[string, string]> = [
+    ["alai_autonomous_exams", "concept_id"],
+    ["alai_concept_competencies", "concept_id"],
+    ["alai_concept_self_tests", "concept_id"],
+    ["alai_evidence_grounded_exams", "concept_id"],
+    ["alai_mastery_validations", "concept_id"],
+    ["common_errors", "concept_id"],
+    ["concept_evidence_links", "concept_id"],
+    ["concept_mastery", "concept_id"],
+    ["concept_stage_flags", "concept_id"],
+    ["topic_concepts", "concept_id"],
+  ];
+
+  for (const [table, column] of conceptReferenceDeletes) {
+    db.prepare(`
+      DELETE FROM ${table}
+      WHERE ${column} = ?
+    `).run(choice.aliasId);
+  }
+
+  db.prepare(`
+    DELETE FROM concept_prerequisites
+    WHERE concept_id = ?
+       OR prerequisite_concept_id = ?
+  `).run(choice.aliasId, choice.aliasId);
+
+  db.prepare(`
+    UPDATE knowledge_gaps
+    SET concept_id = ?
+    WHERE concept_id = ?
+  `).run(choice.canonicalId, choice.aliasId);
 
   db.prepare(`
     DELETE FROM concepts

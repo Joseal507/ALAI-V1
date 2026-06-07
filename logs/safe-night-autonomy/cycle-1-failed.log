@@ -1,0 +1,36 @@
+
+=== Reject blocked pending knowledge (alai:purge-blocked) ===
+
+> alai-brain@1.0.0 alai:purge-blocked
+> tsx scripts/alai-purge-blocked-knowledge.ts
+
+Blocked/noisy pending concepts rejected.
+{ flagged: 0 }
+
+
+
+=== Resolve known contradictions (alai:resolve-contradictions) ===
+
+> alai-brain@1.0.0 alai:resolve-contradictions
+> tsx scripts/alai-resolve-known-contradictions.ts
+
+
+
+/Users/joseal/AdvanceLogicStudios/alai-brain/node_modules/better-sqlite3/lib/methods/wrappers.js:5
+	return this[cppdb].prepare(sql, this, false);
+	                   ^
+SqliteError: no such column: resolved_at
+    at Database.prepare (/Users/joseal/AdvanceLogicStudios/alai-brain/node_modules/better-sqlite3/lib/methods/wrappers.js:5:21)
+    at Database (/Users/joseal/AdvanceLogicStudios/alai-brain/scripts/alai-resolve-known-contradictions.ts:74:4)
+    at Object.<anonymous> (/Users/joseal/AdvanceLogicStudios/alai-brain/scripts/alai-resolve-known-contradictions.ts:91:44)
+    at Module._compile (node:internal/modules/cjs/loader:1812:14)
+    at Object.transformer (/Users/joseal/AdvanceLogicStudios/alai-brain/node_modules/tsx/dist/register-BOkp8V6j.cjs:9:3176)
+    at Module.load (node:internal/modules/cjs/loader:1533:32)
+    at Module._load (node:internal/modules/cjs/loader:1335:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at loadCJSModuleWithModuleLoad (node:internal/modules/esm/translators:328:3)
+    at ModuleWrap.<anonymous> (node:internal/modules/esm/translators:233:7) {
+  code: 'SQLITE_ERROR'
+}
+
+Node.js v24.14.1

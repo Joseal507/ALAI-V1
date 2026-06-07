@@ -21,16 +21,12 @@ export function removeRedundantDetail(text: string): string {
 export function replaceComplexWords(text: string): string {
   return text
     .replace(
-      /In physics terms, net torque equals the time derivative of angular momentum, so applying torque changes the magnitude or direction of angular momentum\./gi,
-      "Torque changes how something spins."
-    )
-    .replace(
-      /net torque equals the time derivative of angular momentum/gi,
-      "torque changes angular momentum"
+      /In physics terms, net torque equals the time derivative of angular momentum/gi,
+      "Net torque tells you how angular momentum changes over time"
     )
     .replace(
       /so applying torque changes the magnitude or direction of angular momentum/gi,
-      "so torque can change how something spins"
+      "so it can change how fast something spins or the direction it spins in"
     )
     .replace(/\s+/g, " ")
     .trim();
@@ -74,8 +70,14 @@ export function makeProfessional(text: string): string {
 
 export function makeNatural(text: string): string {
   return text
-    .replace(/El torque cambia el momento angular con el tiempo\./gi, "En simple, el torque cambia cómo gira algo.")
-    .replace(/Torque changes angular momentum over time\./gi, "Basically, torque changes how something spins.")
+    .replace(
+      /El torque cambia el momento angular con el tiempo\./gi,
+      "El torque cambia el momento angular con el tiempo. En palabras simples, cambia qué tan rápido gira algo o hacia dónde gira."
+    )
+    .replace(
+      /Torque changes angular momentum over time\./gi,
+      "Torque changes angular momentum over time. In simple terms, it changes how fast something spins or the direction it spins in."
+    )
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -105,4 +107,50 @@ export function removeNearDuplicateSentences(text: string): string {
   }
 
   return result.join(" ");
+}
+
+
+export function improveClarity(text: string): string {
+  return text
+    .replace(/\s+/g, " ")
+    .replace(/,\s*,/g, ",")
+    .trim();
+}
+
+export function addHelpfulExample(text: string, outputLanguage: string): string {
+  const cleaned = text.trim();
+
+  if (/torque/i.test(cleaned) && (/angular momentum/i.test(cleaned) || /spinning|rotation|gira/i.test(cleaned))) {
+    return outputLanguage === "es"
+      ? `${cleaned} Por ejemplo, si empujas una puerta lejos de la bisagra, aplicas más torque y cambias más fácilmente su rotación.`
+      : `${cleaned} For example, pushing farther from a door hinge creates more torque, so the door's rotation changes more easily.`;
+  }
+
+  return cleaned;
+}
+
+
+export function makeTechnical(text: string): string {
+  return text
+    .replace(
+      /Torque changes angular momentum over time\./gi,
+      "Net torque is equal to the time rate of change of angular momentum."
+    )
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+export function makeCasual(text: string): string {
+  const cleaned = text.replace(/\s+/g, " ").trim();
+
+  if (/in simple terms|for example/i.test(cleaned)) {
+    return cleaned;
+  }
+
+  return cleaned
+    .replace(
+      /Torque changes angular momentum over time\./gi,
+      "Torque changes how an object keeps spinning over time."
+    )
+    .trim();
 }

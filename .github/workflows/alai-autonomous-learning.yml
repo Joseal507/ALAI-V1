@@ -1,0 +1,81 @@
+name: ALAI Autonomous Learning
+
+on:
+  workflow_dispatch:
+    inputs:
+      session_minutes:
+        description: "Minutes to learn in this run"
+        required: false
+        default: "15"
+      max_cycles:
+        description: "Max cycles inside this run"
+        required: false
+        default: "3"
+
+  schedule:
+    # Panama is UTC-5. 7 AM Panama = 12 UTC. 10 PM Panama = 03 UTC next day.
+    # Runs once per hour during daytime window.
+    - cron: "0 12-23 * * *"
+    - cron: "0 0-3 * * *"
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: alai-autonomous-learning
+  cancel-in-progress: false
+
+jobs:
+  learn:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    env:
+      ALAI_SESSION_MINUTES: ${{ github.event.inputs.session_minutes || '15' }}
+      ALAI_SLEEP_SECONDS: "60"
+      ALAI_MAX_CYCLES: ${{ github.event.inputs.max_cycles || '3' }}
+
+      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      GROQ_API_KEY_1: ${{ secrets.GROQ_API_KEY_1 }}
+      GROQ_API_KEY_2: ${{ secrets.GROQ_API_KEY_2 }}
+      GROQ_API_KEY_3: ${{ secrets.GROQ_API_KEY_3 }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Run ALAI learning loop
+        run: npm run alai:github-learn-loop
+
+      - name: Commit learned ALAI state
+        run: |
+          git config user.name "ALAI GitHub Learner"
+          git config user.email "alai-bot@users.noreply.github.com"
+
+          git add data/alai.db package.json package-lock.json scripts .github/workflows || true
+
+          if git diff --cached --quiet; then
+            echo "No ALAI learning changes to commit."
+          else
+            git commit -m "ALAI autonomous learning state update"
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi

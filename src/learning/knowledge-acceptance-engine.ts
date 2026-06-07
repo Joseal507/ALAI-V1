@@ -90,7 +90,22 @@ export function decideConceptAcceptance(
 
   const tier = classifyKnowledgeTier(input.name, input.description);
 
-  if (tier === "META") {
+  const allowedAcademicDomains = new Set([
+    "mathematics",
+    "language",
+    "science",
+    "history",
+    "geometry",
+    "algebra",
+    "statistics",
+    "technology",
+    "machine learning",
+    "artificial intelligence",
+    "academic writing",
+    "numeracy",
+  ]);
+
+  if (tier === "META" && !allowedAcademicDomains.has(name)) {
     return {
       accepted: false,
       confidence: 0.95,

@@ -5,7 +5,6 @@ export interface InferredRelation {
   toConceptId: string;
   relationType:
     | "INDIRECTLY_DEPENDS_ON"
-    | "INDIRECTLY_RELATED_TO"
     | "CONTRIBUTES_TO";
   description: string;
   confidenceScore: number;
@@ -68,18 +67,6 @@ export function inferGraphRelations(db: Database.Database): InferredRelation[] {
         });
       }
 
-      if (
-        first.relationType === "RELATED_TO" &&
-        second.relationType === "RELATED_TO"
-      ) {
-        inferred.push({
-          fromConceptId: first.fromConceptId,
-          toConceptId: second.toConceptId,
-          relationType: "INDIRECTLY_RELATED_TO",
-          description: `${first.fromName} is indirectly related to ${second.toName} through ${first.toName}.`,
-          confidenceScore: 0.22,
-        });
-      }
     }
   }
 

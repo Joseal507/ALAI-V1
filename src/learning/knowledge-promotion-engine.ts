@@ -2,6 +2,8 @@ export interface PromotionInput {
   conceptName: string;
   status: string;
   evidenceCount: number;
+  externalEvidenceCount: number;
+  groundedExamPassed: boolean;
   relationCount: number;
   capabilityCount: number;
   confidenceScore: number;
@@ -17,12 +19,6 @@ export interface PromotionDecision {
 export function decideKnowledgePromotion(
   input: PromotionInput
 ): PromotionDecision {
-  const qualityScore =
-    Math.min(input.evidenceCount * 0.25, 0.45) +
-    Math.min(input.relationCount * 0.15, 0.3) +
-    Math.min(input.capabilityCount * 0.2, 0.2) +
-    Math.min(input.confidenceScore * 0.2, 0.2);
-
   if (input.status === "CANONICAL") {
     return {
       shouldPromote: false,
@@ -41,16 +37,22 @@ export function decideKnowledgePromotion(
     };
   }
 
-  if (
-    qualityScore >= 0.75 ||
-    (input.relationCount >= 5 && input.confidenceScore >= 0.6) ||
-    (input.relationCount >= 3 && input.confidenceScore >= 0.65)
-  ) {
+  const hasRealEvidence =
+    input.externalEvidenceCount >= 2 || input.groundedExamPassed;
+
+  const hasLearningStructure =
+    input.relationCount >= 2 &&
+    input.capabilityCount >= 2;
+
+  const hasEnoughTotalEvidence =
+    input.evidenceCount >= 3;
+
+  if (hasRealEvidence && hasLearningStructure && hasEnoughTotalEvidence) {
     return {
       shouldPromote: true,
       nextStatus: "VERIFIED",
       nextConfidence: Math.max(input.confidenceScore, 0.7),
-      reason: "Concept has enough evidence, relations, confidence, or graph support to be verified.",
+      reason: "Concept has real external/grounded evidence plus relations and capabilities.",
     };
   }
 
@@ -58,6 +60,6 @@ export function decideKnowledgePromotion(
     shouldPromote: false,
     nextStatus: "PENDING",
     nextConfidence: input.confidenceScore,
-    reason: "Concept does not meet promotion threshold yet.",
+    reason: "Concept needs real external or grounded evidence before verification.",
   };
 }

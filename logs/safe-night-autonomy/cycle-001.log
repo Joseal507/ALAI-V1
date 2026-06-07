@@ -1,0 +1,305 @@
+
+=== Reject blocked pending knowledge (alai:purge-blocked) ===
+
+> alai-brain@1.0.0 alai:purge-blocked
+> tsx scripts/alai-purge-blocked-knowledge.ts
+
+Blocked/noisy pending concepts rejected.
+{ flagged: 0 }
+
+
+
+=== Resolve known contradictions (alai:resolve-contradictions) ===
+
+> alai-brain@1.0.0 alai:resolve-contradictions
+> tsx scripts/alai-resolve-known-contradictions.ts
+
+Known contradiction resolver completed.
+{ relationsFixed: 0, flagsClosed: 0 }
+
+
+
+=== Execute limited research (alai:research-executor) ===
+
+> alai-brain@1.0.0 alai:research-executor
+> tsx scripts/alai-research-executor.ts
+
+◇ injected env (41) from .env.local // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+StudyAI: groq OK
+StudyAI: groq OK
+StudyAI: groq OK
+StudyAI: groq OK
+StudyAI: groq OK
+StudyAI: groq OK
+StudyAI: groq OK
+StudyAI: groq OK
+StudyAI: groq OK
+StudyAI: groq OK
+StudyAI: groq OK
+StudyAI: groq OK
+StudyAI: groq OK
+StudyAI: groq OK
+StudyAI: groq OK
+StudyAI: groq OK
+ALAI research executor completed.
+{
+  processed: 20,
+  questionsAnswered: 8,
+  evidenceInserted: 6,
+  evidenceLinked: 17
+}
+┌─────────┬──────────────────────────────────┬────────────────┬──────────────────────────────────────────────────────────────────────────┬─────────┬──────────┬────────┐
+│ (index) │ target                           │ type           │ query                                                                    │ sources │ inserted │ linked │
+├─────────┼──────────────────────────────────┼────────────────┼──────────────────────────────────────────────────────────────────────────┼─────────┼──────────┼────────┤
+│ 0       │ 'Animal'                         │ 'EVIDENCE_GAP' │ 'Animal reliable educational explanation basics'                         │ 0       │ 0        │ 0      │
+│ 1       │ 'Linear Transformation'          │ 'EVIDENCE_GAP' │ 'REJECTED_BY_GOVERNANCE'                                                 │ 0       │ 0        │ 0      │
+│ 2       │ 'Module'                         │ 'EVIDENCE_GAP' │ 'REJECTED_BY_GOVERNANCE'                                                 │ 0       │ 0        │ 0      │
+│ 3       │ 'Transitoria Cuarta'             │ 'EVIDENCE_GAP' │ 'REJECTED_BY_GOVERNANCE'                                                 │ 0       │ 0        │ 0      │
+│ 4       │ 'Dimension (Vector Space)'       │ 'EVIDENCE_GAP' │ 'Dimension (Vector Space) reliable educational explanation basics'       │ 3       │ 0        │ 3      │
+│ 5       │ 'Basis (Vector Space)'           │ 'EVIDENCE_GAP' │ 'Basis (Vector Space) reliable educational explanation basics'           │ 3       │ 0        │ 3      │
+│ 6       │ 'Sociometry'                     │ 'EVIDENCE_GAP' │ 'REJECTED_BY_GOVERNANCE'                                                 │ 0       │ 0        │ 0      │
+│ 7       │ 'Mathematical methods'           │ 'EVIDENCE_GAP' │ 'REJECTED_BY_GOVERNANCE'                                                 │ 0       │ 0        │ 0      │
+│ 8       │ 'Secondary education'            │ 'EVIDENCE_GAP' │ 'REJECTED_BY_GOVERNANCE'                                                 │ 0       │ 0        │ 0      │
+│ 9       │ 'Expansion of primary education' │ 'EVIDENCE_GAP' │ 'Expansion of primary education reliable educational explanation basics' │ 3       │ 3        │ 0      │
+│ 10      │ 'Adjoint Representation'         │ 'EVIDENCE_GAP' │ 'REJECTED_BY_GOVERNANCE'                                                 │ 0       │ 0        │ 0      │
+│ 11      │ 'Lie Algebra'                    │ 'EVIDENCE_GAP' │ 'REJECTED_BY_GOVERNANCE'                                                 │ 0       │ 0        │ 0      │
+│ 12      │ 'Mathematical object'            │ 'EVIDENCE_GAP' │ 'REJECTED_BY_GOVERNANCE'                                                 │ 0       │ 0        │ 0      │
+│ 13      │ 'Four-dimensional geometry'      │ 'EVIDENCE_GAP' │ 'Four-dimensional geometry reliable educational explanation basics'      │ 3       │ 2        │ 1      │
+│ 14      │ 'Elementary Linear Algebra'      │ 'EVIDENCE_GAP' │ 'Elementary Linear Algebra reliable educational explanation basics'      │ 3       │ 1        │ 2      │
+│ 15      │ 'Geometry'                       │ 'EVIDENCE_GAP' │ 'REJECTED_BY_GOVERNANCE'                                                 │ 0       │ 0        │ 0      │
+│ 16      │ 'Inner Product'                  │ 'EVIDENCE_GAP' │ 'REJECTED_BY_GOVERNANCE'                                                 │ 0       │ 0        │ 0      │
+│ 17      │ 'Rigid body'                     │ 'EVIDENCE_GAP' │ 'Rigid body reliable educational explanation basics'                     │ 2       │ 0        │ 2      │
+│ 18      │ 'Mathematics Education'          │ 'EVIDENCE_GAP' │ 'Mathematics Education reliable educational explanation basics'          │ 3       │ 0        │ 3      │
+│ 19      │ 'Science Education'              │ 'EVIDENCE_GAP' │ 'Science Education reliable educational explanation basics'              │ 3       │ 0        │ 3      │
+└─────────┴──────────────────────────────────┴────────────────┴──────────────────────────────────────────────────────────────────────────┴─────────┴──────────┴────────┘
+
+Rejected research question by governance: {
+  target: 'Linear Transformation',
+  reason: 'LOW_CURRICULUM_ALIGNMENT',
+  score: 0.25
+}
+Rejected research question by governance: { target: 'Module', reason: 'LOW_CURRICULUM_ALIGNMENT', score: 0.25 }
+Rejected research question by governance: {
+  target: 'Transitoria Cuarta',
+  reason: 'LOW_CURRICULUM_ALIGNMENT',
+  score: 0.25
+}
+StudyAI: key blocked 60s
+StudyAI: rate limit on groq
+StudyAI: key blocked 60s
+StudyAI: rate limit on groq
+Rejected research question by governance: {
+  target: 'Sociometry',
+  reason: 'LOW_CURRICULUM_ALIGNMENT',
+  score: 0.25
+}
+Rejected research question by governance: {
+  target: 'Mathematical methods',
+  reason: 'LOW_CURRICULUM_ALIGNMENT',
+  score: 0.4
+}
+Rejected research question by governance: {
+  target: 'Secondary education',
+  reason: 'LOW_CURRICULUM_ALIGNMENT',
+  score: 0.4
+}
+Rejected concept by governance: LOW_CURRICULUM_ALIGNMENT { name: 'Ministry of Education', score: 0.4 }
+Rejected relation: Invalid relation type: FOLLOWS {
+  fromConcept: 'Primary education',
+  toConcept: 'Preschool',
+  type: 'FOLLOWS',
+  description: 'Primary education comes after preschool'
+}
+Rejected relation: Invalid relation type: TAKES_PLACE_IN {
+  fromConcept: 'Primary education',
+  toConcept: 'Primary schools',
+  type: 'TAKES_PLACE_IN',
+  description: 'Primary education takes place in primary schools'
+}
+Rejected concept by budget: { name: 'Primary schools', maxNewConcepts: 3 }
+Rejected concept by budget: {
+  name: 'Ministry of Primary and Secondary Education',
+  maxNewConcepts: 3
+}
+Rejected concept by budget: {
+  name: 'Ministry of Primary and Secondary Education',
+  maxNewConcepts: 3
+}
+Rejected research question by governance: {
+  target: 'Adjoint Representation',
+  reason: 'LOW_CURRICULUM_ALIGNMENT',
+  score: 0.25
+}
+Rejected research question by governance: {
+  target: 'Lie Algebra',
+  reason: 'LOW_CURRICULUM_ALIGNMENT',
+  score: 0.4
+}
+Rejected research question by governance: {
+  target: 'Mathematical object',
+  reason: 'LOW_CURRICULUM_ALIGNMENT',
+  score: 0.4
+}
+Rejected relation: Invalid relation type: EXTENDS {
+  fromConcept: 'Analytical geometry',
+  toConcept: 'Geometry',
+  type: 'EXTENDS',
+  description: 'Analytical geometry extends geometry'
+}
+Rejected concept by budget: { name: 'Mathematics', maxNewConcepts: 3 }
+Rejected concept by governance: LOW_CURRICULUM_ALIGNMENT { name: 'Material objects', score: 0.4 }
+Rejected concept by governance: LOW_CURRICULUM_ALIGNMENT { name: 'Franciscus Patricius', score: 0.4 }
+Rejected concept by governance: LOW_CURRICULUM_ALIGNMENT { name: 'Mathematical Proof', score: 0.4 }
+Rejected concept by governance: LOW_CURRICULUM_ALIGNMENT { name: 'Field Theory', score: 0.4 }
+Rejected concept by budget: { name: 'Mathematical Proof', maxNewConcepts: 3 }
+Rejected concept by governance: LOW_CURRICULUM_ALIGNMENT { name: 'Carl Friedrich Gauss', score: 0.4 }
+Rejected research question by governance: { target: 'Geometry', reason: 'LOW_CURRICULUM_ALIGNMENT', score: 0.4 }
+Rejected research question by governance: {
+  target: 'Inner Product',
+  reason: 'LOW_CURRICULUM_ALIGNMENT',
+  score: 0.25
+}
+Rejected concept by governance: LOW_CURRICULUM_ALIGNMENT { name: 'Epistemology', score: 0.25 }
+Rejected concept by governance: LOW_CURRICULUM_ALIGNMENT { name: 'Franciscus Patricius', score: 0.25 }
+Rejected concept by governance: LOW_CURRICULUM_ALIGNMENT { name: 'Franciscus Patricius', score: 0.4 }
+Rejected concept by governance: LOW_CURRICULUM_ALIGNMENT { name: 'Erotic Sensibilities', score: 0.4 }
+Rejected concept by governance: LOW_CURRICULUM_ALIGNMENT { name: 'Erotic Sensibilities', score: 0.4 }
+Rejected concept by acceptance: Meta concepts require manual promotion and cannot be auto-learned. { name: 'Mathematics' }
+Rejected concept by acceptance: Meta concepts require manual promotion and cannot be auto-learned. { name: 'Mathematics' }
+Rejected concept by governance: LOW_CURRICULUM_ALIGNMENT { name: 'Curricula', score: 0.4 }
+Rejected concept by governance: LOW_CURRICULUM_ALIGNMENT { name: 'Textbooks', score: 0.4 }
+Rejected concept by governance: LOW_CURRICULUM_ALIGNMENT { name: 'Modernization of Education', score: 0.4 }
+Rejected concept by governance: LOW_CURRICULUM_ALIGNMENT { name: 'Public Education System', score: 0.4 }
+Rejected relation: Invalid relation type: CHANGES {
+  fromConcept: 'Western science',
+  toConcept: 'Japan',
+  type: 'CHANGES',
+  description: 'Western science influences Japan'
+}
+Rejected concept by governance: LOW_CURRICULUM_ALIGNMENT { name: 'Japan', score: 0.4 }
+Rejected concept by budget: { name: 'Mathematics', maxNewConcepts: 3 }
+Rejected concept by budget: { name: 'University education', maxNewConcepts: 3 }
+
+
+=== Reject blocked pending knowledge again (alai:purge-blocked) ===
+
+> alai-brain@1.0.0 alai:purge-blocked
+> tsx scripts/alai-purge-blocked-knowledge.ts
+
+Blocked/noisy pending concepts rejected.
+{ flagged: 0 }
+
+
+
+=== Promote knowledge (knowledge:promote) ===
+
+> alai-brain@1.0.0 knowledge:promote
+> tsx scripts/promote-knowledge.ts
+
+Promoted: Mathematics Education {
+  shouldPromote: true,
+  nextStatus: 'VERIFIED',
+  nextConfidence: 0.7,
+  reason: 'Concept has enough evidence, relations, confidence, or graph support to be verified.',
+  evidenceCount: 3,
+  relationCount: 2,
+  capabilityCount: 0
+}
+Knowledge promotion completed.
+{ promoted: 1, skipped: 248 }
+
+
+
+=== Evaluate mastery (alai:mastery) ===
+
+> alai-brain@1.0.0 alai:mastery
+> tsx scripts/alai-mastery-engine.ts
+
+ALAI mastery engine completed.
+{ upserted: 249 }
+┌─────────┬────────────────────────────────┬─────────────┬─────────┬────────────┬───────────────┬───────────────┬──────────┬───────────┬──────────────┐
+│ (index) │ name                           │ status      │ mastery │ level      │ evidenceCount │ relationCount │ evidence │ relations │ capabilities │
+├─────────┼────────────────────────────────┼─────────────┼─────────┼────────────┼───────────────┼───────────────┼──────────┼───────────┼──────────────┤
+│ 0       │ 'Animal'                       │ 'CANONICAL' │ 0.893   │ 'MASTERED' │ 6             │ 7             │ 1        │ 1         │ 0.703        │
+│ 1       │ 'Body'                         │ 'CANONICAL' │ 0.893   │ 'MASTERED' │ 4             │ 6             │ 1        │ 1         │ 0.703        │
+│ 2       │ 'Counting'                     │ 'CANONICAL' │ 0.893   │ 'MASTERED' │ 5             │ 5             │ 1        │ 1         │ 0.703        │
+│ 3       │ 'Euclidean Vector'             │ 'CANONICAL' │ 0.893   │ 'MASTERED' │ 4             │ 10            │ 1        │ 1         │ 0.703        │
+│ 4       │ 'One'                          │ 'CANONICAL' │ 0.893   │ 'MASTERED' │ 5             │ 4             │ 1        │ 1         │ 0.703        │
+│ 5       │ 'Three'                        │ 'CANONICAL' │ 0.893   │ 'MASTERED' │ 5             │ 3             │ 1        │ 1         │ 0.703        │
+│ 6       │ 'Three-dimensional Space'      │ 'CANONICAL' │ 0.893   │ 'MASTERED' │ 6             │ 5             │ 1        │ 1         │ 0.703        │
+│ 7       │ 'Two'                          │ 'CANONICAL' │ 0.893   │ 'MASTERED' │ 5             │ 4             │ 1        │ 1         │ 0.703        │
+│ 8       │ 'Vector'                       │ 'CANONICAL' │ 0.893   │ 'MASTERED' │ 14            │ 5             │ 1        │ 1         │ 0.703        │
+│ 9       │ 'Group'                        │ 'CANONICAL' │ 0.847   │ 'MASTERED' │ 3             │ 5             │ 1        │ 1         │ 0.55         │
+│ 10      │ 'Group Theory'                 │ 'CANONICAL' │ 0.847   │ 'MASTERED' │ 4             │ 6             │ 1        │ 1         │ 0.55         │
+│ 11      │ 'Scalar'                       │ 'CANONICAL' │ 0.847   │ 'MASTERED' │ 7             │ 8             │ 1        │ 1         │ 0.55         │
+│ 12      │ 'Vector Spaces'                │ 'CANONICAL' │ 0.847   │ 'MASTERED' │ 3             │ 25            │ 1        │ 1         │ 0.55         │
+│ 13      │ 'Ear'                          │ 'CANONICAL' │ 0.845   │ 'MASTERED' │ 8             │ 3             │ 1        │ 1         │ 0.543        │
+│ 14      │ 'Identity Element'             │ 'VERIFIED'  │ 0.817   │ 'STRONG'   │ 8             │ 2             │ 1        │ 0.667     │ 0.55         │
+│ 15      │ 'Words'                        │ 'VERIFIED'  │ 0.817   │ 'STRONG'   │ 4             │ 2             │ 1        │ 0.667     │ 0.55         │
+│ 16      │ 'Early Childhood Education'    │ 'CANONICAL' │ 0.812   │ 'STRONG'   │ 5             │ 4             │ 1        │ 1         │ 0.433        │
+│ 17      │ 'Infant Development'           │ 'CANONICAL' │ 0.812   │ 'STRONG'   │ 5             │ 3             │ 1        │ 1         │ 0.433        │
+│ 18      │ 'Linear Combination'           │ 'CANONICAL' │ 0.812   │ 'STRONG'   │ 6             │ 4             │ 1        │ 1         │ 0.433        │
+│ 19      │ 'Observational Learning'       │ 'CANONICAL' │ 0.812   │ 'STRONG'   │ 5             │ 4             │ 1        │ 1         │ 0.433        │
+│ 20      │ 'Primary Education'            │ 'CANONICAL' │ 0.812   │ 'STRONG'   │ 3             │ 4             │ 1        │ 1         │ 0.433        │
+│ 21      │ 'Color'                        │ 'CANONICAL' │ 0.77    │ 'STRONG'   │ 2             │ 5             │ 0.667    │ 1         │ 0.627        │
+│ 22      │ 'Shape'                        │ 'CANONICAL' │ 0.77    │ 'STRONG'   │ 2             │ 5             │ 0.667    │ 1         │ 0.627        │
+│ 23      │ 'Family'                       │ 'VERIFIED'  │ 0.746   │ 'STRONG'   │ 1             │ 4             │ 0.333    │ 1         │ 0.703        │
+│ 24      │ 'Classical education movement' │ 'VERIFIED'  │ 0.735   │ 'STRONG'   │ 3             │ 4             │ 1        │ 1         │ 0            │
+│ 25      │ 'Basic Arithmetic'             │ 'VERIFIED'  │ 0.733   │ 'STRONG'   │ 4             │ 1             │ 1        │ 0.333     │ 0.55         │
+│ 26      │ 'Body Parts'                   │ 'VERIFIED'  │ 0.733   │ 'STRONG'   │ 4             │ 1             │ 1        │ 0.333     │ 0.55         │
+│ 27      │ 'Bird'                         │ 'VERIFIED'  │ 0.731   │ 'STRONG'   │ 5             │ 1             │ 1        │ 0.333     │ 0.543        │
+│ 28      │ 'Cat'                          │ 'VERIFIED'  │ 0.731   │ 'STRONG'   │ 5             │ 1             │ 1        │ 0.333     │ 0.543        │
+│ 29      │ 'Cow'                          │ 'VERIFIED'  │ 0.731   │ 'STRONG'   │ 5             │ 1             │ 1        │ 0.333     │ 0.543        │
+└─────────┴────────────────────────────────┴─────────────┴─────────┴────────────┴───────────────┴───────────────┴──────────┴───────────┴──────────────┘
+
+
+
+=== Promote mastered (alai:promote-mastered) ===
+
+> alai-brain@1.0.0 alai:promote-mastered
+> tsx scripts/alai-promote-mastered-concepts.ts
+
+Mastered concept promotion completed.
+{ promoted: 0 }
+
+
+
+=== Prune noise (concepts:prune-noise) ===
+
+> alai-brain@1.0.0 concepts:prune-noise
+> tsx scripts/prune-noise-concepts.ts
+
+Noise concept pruning completed.
+{ deleted: 0, skipped: 249 }
+
+
+
+=== Health check (model:health) ===
+
+> alai-brain@1.0.0 model:health
+> tsx scripts/model-health.ts
+
+
+=== ALAI World Model Health ===
+{
+  concepts: 249,
+  relations: 215,
+  verifiedConcepts: 36,
+  pendingConcepts: 95,
+  strictMasteredConcepts: 14,
+  verifiedRatio: 0.145,
+  activeDomains: [
+    { name: 'Mathematics', completion: 0, effective: 0 },
+    { name: 'Algebra', completion: 0, effective: 0.05 },
+    {
+      name: 'Foundational Learning',
+      completion: 0.059,
+      effective: 0.123
+    },
+    { name: 'Primary Foundations', completion: 0, effective: 0.017 }
+  ],
+  openConceptFlags: 0,
+  duplicateRelationGroups: 0,
+  healthScore: '60/100'
+}
+

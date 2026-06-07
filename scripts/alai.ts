@@ -13,6 +13,7 @@ import { retrieveLanguagePatterns, buildLanguagePatternContext } from "../src/la
 import { renderInternalAnswerWithLanguagePatterns } from "../src/language/internal-language-renderer";
 import { retrieveLanguageSkillContext, buildLanguageSkillContextText } from "../src/language/language-skill-retriever";
 import { preferredOutputLanguage } from "../src/language/language-detector";
+import { retrieveLanguageStrategyContext, mergeStrategyIntoSkillContext, buildLanguageStrategyContextText } from "../src/language/language-strategy-retriever";
 import { buildAnswerPlan, renderAnswerPlan } from "../src/reasoning/answer-planner";
 
 async function main() {
@@ -36,6 +37,9 @@ async function main() {
   const languageSkillContext = retrieveLanguageSkillContext(db, input);
   const languageSkillContextText = buildLanguageSkillContextText(languageSkillContext);
   const outputLanguage = preferredOutputLanguage(input);
+  const languageStrategyContext = retrieveLanguageStrategyContext(db, input);
+  const mergedLanguageSkillContext = mergeStrategyIntoSkillContext(languageSkillContext, languageStrategyContext);
+  const languageStrategyContextText = buildLanguageStrategyContextText(languageStrategyContext);
 
   if (
     answerPlan.canAnswerInternally &&
@@ -62,8 +66,11 @@ async function main() {
     console.log("\n=== ALAI Language Skill Context ===");
     console.log(languageSkillContextText);
 
+    console.log("\n=== ALAI Language Strategy Context ===");
+    console.log(languageStrategyContextText);
+
     console.log("\n=== ALAI Answer ===");
-    console.log(renderInternalAnswerWithLanguagePatterns(answerPlan, languagePatterns, languageSkillContext, outputLanguage));
+    console.log(renderInternalAnswerWithLanguagePatterns(answerPlan, languagePatterns, mergedLanguageSkillContext, outputLanguage));
     return;
   }
 
@@ -145,6 +152,9 @@ async function main() {
   console.log("\n=== ALAI Language Skill Context ===");
   console.log(languageSkillContextText);
 
+  console.log("\n=== ALAI Language Strategy Context ===");
+  console.log(languageStrategyContextText);
+
   if (researchContext) {
     console.log("\n=== ALAI Research Context ===");
     console.log(researchContext);
@@ -180,6 +190,9 @@ ${languagePatternContext}
 
 Language skill graph:
 ${languageSkillContextText}
+
+Language strategy graph:
+${languageStrategyContextText}
 
 Research context:
 ${researchContext || "No external research context available."}
