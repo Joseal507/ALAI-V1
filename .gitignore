@@ -1,9 +1,8 @@
-node_modules
-dist
+node_modules/
 .env
 .env.local
-
-data/*.db-wal
-data/*.db-shm
-
+logs/
+data/backups/
+data/alai.backup-before-*.db
+*.tmp
 .DS_Store
