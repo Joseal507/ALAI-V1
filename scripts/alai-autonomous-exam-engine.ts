@@ -65,7 +65,7 @@ const concepts = db.prepare(`
     externalEvidenceCount DESC,
     cc.competency_score DESC,
     cm.relation_count DESC
-  LIMIT 500
+  LIMIT 1000
 `).all() as ConceptRow[];
 
 function related(conceptId: string) {
@@ -218,6 +218,20 @@ console.table(db.prepare(`
     ROUND(AVG(e.score), 3) AS avgScore
   FROM alai_autonomous_exams e
   JOIN concepts c ON c.id = e.concept_id
+  WHERE c.status != 'REJECTED'
+    AND lower(c.name) NOT LIKE '%?%'
+    AND lower(c.name) NOT LIKE 'que %'
+    AND lower(c.name) NOT LIKE 'qué %'
+    AND lower(c.name) NOT LIKE 'como %'
+    AND lower(c.name) NOT LIKE 'cómo %'
+    AND lower(c.name) NOT LIKE 'para que %'
+    AND lower(c.name) NOT LIKE 'para qué %'
+    AND lower(c.name) NOT LIKE 'why %'
+    AND lower(c.name) NOT LIKE 'how %'
+    AND lower(c.name) NOT LIKE 'what %'
+    AND lower(c.name) NOT LIKE 'when %'
+    AND lower(c.name) NOT LIKE 'where %'
+
   GROUP BY c.id
   ORDER BY avgScore DESC, passed DESC, c.name ASC
   LIMIT 25

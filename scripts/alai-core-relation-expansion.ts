@@ -93,11 +93,11 @@ const rules: [string, string, string, string, number][] = [
   ["Division", "Multiplication", "INVERSE_OF", "Division is the inverse operation of multiplication.", 0.85],
   ["Division", "Equal Sharing", "EXPLAINS", "Division can be explained as equal sharing.", 0.8],
   ["Equal Sharing", "Group", "OPERATES_ON", "Equal sharing operates on groups.", 0.7],
-  ["Number", "Digit", "RELATED_TO", "Digits are symbols used to write numbers.", 0.8],
+  ["Number", "Digit", "DEPENDS_ON", "Digits are symbols used to write numbers.", 0.8],
   ["Counting", "Number", "USED_FOR", "Counting is used to determine number quantity.", 0.8],
   ["Comparison", "Number", "OPERATES_ON", "Comparison can operate on numbers.", 0.7],
-  ["Comparison", "Big", "RELATED_TO", "Big is a comparison idea.", 0.7],
-  ["Comparison", "Small", "RELATED_TO", "Small is a comparison idea.", 0.7],
+  ["Comparison", "Big", "DEPENDS_ON", "Big is a comparison idea.", 0.7],
+  ["Comparison", "Small", "DEPENDS_ON", "Small is a comparison idea.", 0.7],
   ["Color", "Blue", "EXAMPLE_OF", "Blue is an example of a color.", 0.8],
   ["Animal", "Cat", "EXAMPLE_OF", "Cat is an example of an animal.", 0.8],
   ["Animal", "Bird", "EXAMPLE_OF", "Bird is an example of an animal.", 0.8],
@@ -142,7 +142,7 @@ for (const [topic, names] of byTopic.entries()) {
       add(
         a,
         b,
-        "RELATED_TO",
+        "DEPENDS_ON",
         `${a} and ${b} are connected inside the curriculum topic "${topic}".`,
         0.45
       );
@@ -150,7 +150,7 @@ for (const [topic, names] of byTopic.entries()) {
       add(
         b,
         a,
-        "RELATED_TO",
+        "DEPENDS_ON",
         `${b} and ${a} are connected inside the curriculum topic "${topic}".`,
         0.45
       );

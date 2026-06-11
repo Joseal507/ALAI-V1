@@ -60,6 +60,7 @@ let preserved = 0;
 const updateMastery = db.prepare(`
   UPDATE concept_mastery
   SET mastery_score = ?,
+      mastery_level = ?,
       evidence_count = ?,
       relation_count = ?,
       last_calculated_at = ?,
@@ -72,13 +73,14 @@ const insertMastery = db.prepare(`
     id,
     concept_id,
     mastery_score,
+    mastery_level,
     evidence_count,
     relation_count,
     contradiction_count,
     last_calculated_at,
     created_at,
     updated_at
-  ) VALUES (lower(hex(randomblob(16))), ?, ?, ?, ?, 0, ?, ?, ?)
+  ) VALUES (lower(hex(randomblob(16))), ?, ?, ?, ?, ?, 0, ?, ?, ?)
 `);
 
 const promoteConcept = db.prepare(`
@@ -101,15 +103,21 @@ for (const row of rows) {
     totalPassedExamSignals >= 3;
 
   const passesStrict =
-    row.competency >= 0.6 &&
+    row.competency >= 0.55 &&
     row.competencyStatus !== "WEAK" &&
     hasExamProof &&
-    row.relations >= 3 &&
+    row.relations >= 2 &&
     row.evidence >= 2;
 
   const strictScore = passesStrict
-    ? Math.max(row.competency, 0.82)
+    ? Math.max(row.competency, 0.84)
     : Math.min(row.competency, 0.79);
+
+  const strictLevel =
+    passesStrict ? "MASTERED" :
+    strictScore >= 0.7 ? "STRONG" :
+    strictScore >= 0.52 ? "DEVELOPING" :
+    "WEAK";
 
   const existing = db.prepare(`
     SELECT id FROM concept_mastery
@@ -120,6 +128,7 @@ for (const row of rows) {
   if (existing) {
     updateMastery.run(
       Number(strictScore.toFixed(3)),
+      strictLevel,
       row.evidence,
       row.relations,
       now,
@@ -130,6 +139,7 @@ for (const row of rows) {
     insertMastery.run(
       row.id,
       Number(strictScore.toFixed(3)),
+      strictLevel,
       row.evidence,
       row.relations,
       now,

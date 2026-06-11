@@ -36,7 +36,7 @@ const concepts = db.prepare(`
   ORDER BY
     CASE WHEN c.status = 'PENDING' THEN 0 ELSE 1 END,
     c.updated_at ASC
-  LIMIT 120
+  LIMIT 500
 `).all() as {
   id: string;
   name: string;

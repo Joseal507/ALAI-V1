@@ -88,7 +88,7 @@ const semanticRules = [
   ["Scalar Multiplication", "Vector Spaces", "PART_OF", "Scalar multiplication is one of the defining operations of a vector space."],
   ["Vector Axioms", "Vector Spaces", "DEFINES", "Vector axioms define the structure required for a vector space."],
   ["Span", "Linear Combination", "DEPENDS_ON", "Span depends on forming linear combinations of vectors."],
-  ["Linear Independence", "Vector Spaces", "RELATED_TO", "Linear independence is a core concept in vector spaces."],
+  ["Linear Independence", "Vector Spaces", "DEPENDS_ON", "Linear independence is a core concept in vector spaces."],
   ["Basis", "Linear Independence", "DEPENDS_ON", "A basis depends on linear independence."],
   ["Basis", "Span", "DEPENDS_ON", "A basis must span the vector space."],
   ["Linear Transformation", "Vector Spaces", "MAPS_BETWEEN", "Linear transformations map between vector spaces while preserving structure."],
@@ -101,7 +101,7 @@ const semanticRules = [
   ["Angle Measurement", "Geometry", "PART_OF", "Angle measurement is a geometric concept."],
   ["Basic Arithmetic", "Mathematics", "PART_OF", "Basic arithmetic is part of mathematics."],
   ["Numbers", "Basic Arithmetic", "FOUNDATION_FOR", "Numbers provide the foundation for basic arithmetic."],
-  ["Arithmetic", "Basic Arithmetic", "RELATED_TO", "Arithmetic is closely related to basic arithmetic."],
+  ["Arithmetic", "Basic Arithmetic", "DEPENDS_ON", "Arithmetic is closely related to basic arithmetic."],
   ["Addition", "Basic Arithmetic", "PART_OF", "Addition is part of basic arithmetic."],
   ["Subtraction", "Basic Arithmetic", "PART_OF", "Subtraction is part of basic arithmetic."],
   ["Multiplication", "Basic Arithmetic", "PART_OF", "Multiplication is part of basic arithmetic."],
@@ -172,9 +172,9 @@ for (const concept of weakButEvidenced) {
     if (addRelation(
       concept.id,
       other.id,
-      "RELATED_TO",
-      `${concept.name} is related to ${other.name} through shared curriculum topics.`,
-      0.56
+      "DEPENDS_ON",
+      `${concept.name} depends on or is supported by ${other.name} through shared curriculum topics.`,
+      0.62
     )) created++;
     else skipped++;
   }
@@ -194,9 +194,9 @@ for (const concept of weakButEvidenced) {
     if (addRelation(
       concept.id,
       other.id,
-      "EVIDENCE_RELATED_TO",
-      `${concept.name} is evidence-related to ${other.name} because they share supporting evidence.`,
-      0.54
+      "SUPPORTS",
+      `${concept.name} is supported by evidence also connected to ${other.name}.`,
+      0.60
     )) created++;
     else skipped++;
   }
