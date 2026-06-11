@@ -36,16 +36,66 @@ jobs:
       ALAI_MAX_CYCLES: ${{ github.event.inputs.max_cycles || '2' }}
 
       GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-      GROQ_API_KEY_1: ${{ secrets.GROQ_API_KEY_1 }}
       GROQ_API_KEY_2: ${{ secrets.GROQ_API_KEY_2 }}
       GROQ_API_KEY_3: ${{ secrets.GROQ_API_KEY_3 }}
+      GROQ_API_KEY_4: ${{ secrets.GROQ_API_KEY_4 }}
+      GROQ_API_KEY_5: ${{ secrets.GROQ_API_KEY_5 }}
+      GROQ_API_KEY_6: ${{ secrets.GROQ_API_KEY_6 }}
+      GROQ_API_KEY_7: ${{ secrets.GROQ_API_KEY_7 }}
+      GROQ_MODEL: ${{ secrets.GROQ_MODEL }}
+
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      GEMINI_API_KEY_2: ${{ secrets.GEMINI_API_KEY_2 }}
+      GEMINI_API_KEY_3: ${{ secrets.GEMINI_API_KEY_3 }}
+      GEMINI_API_KEY_4: ${{ secrets.GEMINI_API_KEY_4 }}
+      GEMINI_API_KEY_TEST: ${{ secrets.GEMINI_API_KEY_TEST }}
+      GEMINI_PREMIUM_KEY: ${{ secrets.GEMINI_PREMIUM_KEY }}
+      GEMINI_MODEL: ${{ secrets.GEMINI_MODEL }}
+      GEMINI_DISABLED: ${{ secrets.GEMINI_DISABLED }}
+
+      CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
+      CEREBRAS_API_KEY_2: ${{ secrets.CEREBRAS_API_KEY_2 }}
+      CEREBRAS_API_KEY_3: ${{ secrets.CEREBRAS_API_KEY_3 }}
+      CEREBRAS_API_KEY_4: ${{ secrets.CEREBRAS_API_KEY_4 }}
+      CEREBRAS_API_KEY_5: ${{ secrets.CEREBRAS_API_KEY_5 }}
+      CEREBRAS_MODEL: ${{ secrets.CEREBRAS_MODEL }}
+
+      HF_API_KEY: ${{ secrets.HF_API_KEY }}
+      HF_API_KEY_2: ${{ secrets.HF_API_KEY_2 }}
+      HF_API_KEY_3: ${{ secrets.HF_API_KEY_3 }}
+      HF_API_KEY_4: ${{ secrets.HF_API_KEY_4 }}
+      HF_API_KEY_5: ${{ secrets.HF_API_KEY_5 }}
+      HF_API_KEY_TEST: ${{ secrets.HF_API_KEY_TEST }}
+      HF_MODEL: ${{ secrets.HF_MODEL }}
+      HF_DISABLED: ${{ secrets.HF_DISABLED }}
+
+      SAMBANOVA_API_KEY: ${{ secrets.SAMBANOVA_API_KEY }}
+      SAMBANOVA_API_KEY_2: ${{ secrets.SAMBANOVA_API_KEY_2 }}
+      SAMBANOVA_API_KEY_3: ${{ secrets.SAMBANOVA_API_KEY_3 }}
+      SAMBANOVA_API_KEY_4: ${{ secrets.SAMBANOVA_API_KEY_4 }}
+      SAMBANOVA_API_KEY_5: ${{ secrets.SAMBANOVA_API_KEY_5 }}
+      SAMBANOVA_API_KEY_TEST: ${{ secrets.SAMBANOVA_API_KEY_TEST }}
+      SAMBANOVA_MODEL: ${{ secrets.SAMBANOVA_MODEL }}
+      SAMBANOVA_DISABLED: ${{ secrets.SAMBANOVA_DISABLED }}
+
+      MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+      MISTRAL_MODEL: ${{ secrets.MISTRAL_MODEL }}
+
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
-      ALAI_GITHUB_MODEL_KEY_1: ${{ secrets.ALAI_GITHUB_MODEL_KEY_1 }}
-      ALAI_GITHUB_MODEL_KEY_2: ${{ secrets.ALAI_GITHUB_MODEL_KEY_2 }}
-      ALAI_GITHUB_MODEL_KEY_3: ${{ secrets.ALAI_GITHUB_MODEL_KEY_3 }}
-      ALAI_GITHUB_MODEL_KEY_4: ${{ secrets.ALAI_GITHUB_MODEL_KEY_4 }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_DAILY_BACKUP: ${{ secrets.CLOUDFLARE_DAILY_BACKUP }}
+      CLOUDFLARE_MODEL: ${{ secrets.CLOUDFLARE_MODEL }}
+
+      GITHUB_MODELS_API_KEY: ${{ secrets.JIT }}
+      GITHUB_MODELS_API_KEY_2: ${{ secrets.JIT2 }}
+      GITHUB_MODELS_API_KEY_3: ${{ secrets.JIT3 }}
+      GITHUB_MODELS_API_KEY_4: ${{ secrets.JIT4 }}
+      GITHUB_MODELS_API_KEY_5: ${{ secrets.JIT5 }}
+      GITHUB_MODELS_API_KEY_6: ${{ secrets.JIT6 }}
+      GITHUB_MODELS_MODEL: ${{ secrets.JIT_MODEL }}
 
     steps:
       - name: Checkout
