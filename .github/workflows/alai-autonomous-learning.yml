@@ -28,11 +28,11 @@ concurrency:
 jobs:
   learn:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 18
 
     env:
-      ALAI_SESSION_MINUTES: ${{ github.event.inputs.session_minutes || '8' }}
-      ALAI_SLEEP_SECONDS: "45"
+      ALAI_SESSION_MINUTES: ${{ github.event.inputs.session_minutes || '15' }}
+      ALAI_SLEEP_SECONDS: "120"
       ALAI_MAX_CYCLES: ${{ github.event.inputs.max_cycles || '1' }}
 
       GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
