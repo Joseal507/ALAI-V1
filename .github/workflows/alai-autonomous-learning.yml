@@ -1,4 +1,4 @@
-name: ALAI Autonomous Learning
+name: ALAI Hybrid Autonomous Learning
 
 on:
   workflow_dispatch:
@@ -6,35 +6,34 @@ on:
       session_minutes:
         description: "Minutes to learn in this run"
         required: false
-        default: "15"
+        default: "18"
       max_cycles:
-        description: "Max cycles inside this run"
+        description: "Max governed cycles inside this run"
         required: false
-        default: "3"
+        default: "2"
 
   schedule:
-    # Panama is UTC-5. 7 AM Panama = 12 UTC. 10 PM Panama = 03 UTC next day.
-    # Runs once per hour during daytime window.
-    - cron: "0 12-23 * * *"
-    - cron: "0 0-3 * * *"
+    # Panama UTC-5. Day learning window.
+    # Runs every 2 hours from 7 AM to 10 PM Panama.
+    - cron: "0 12,14,16,18,20,22,0,2,3 * * *"
 
 permissions:
   contents: write
   actions: read
 
 concurrency:
-  group: alai-autonomous-learning
+  group: alai-hybrid-autonomous-learning
   cancel-in-progress: false
 
 jobs:
   learn:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
 
     env:
-      ALAI_SESSION_MINUTES: ${{ github.event.inputs.session_minutes || '15' }}
-      ALAI_SLEEP_SECONDS: "60"
-      ALAI_MAX_CYCLES: ${{ github.event.inputs.max_cycles || '3' }}
+      ALAI_SESSION_MINUTES: ${{ github.event.inputs.session_minutes || '18' }}
+      ALAI_SLEEP_SECONDS: "45"
+      ALAI_MAX_CYCLES: ${{ github.event.inputs.max_cycles || '2' }}
 
       GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
       GROQ_API_KEY_1: ${{ secrets.GROQ_API_KEY_1 }}
@@ -62,20 +61,26 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
-      - name: Run ALAI learning loop
+      - name: Run governed ALAI hybrid learning loop
         run: npm run alai:github-learn-loop
+
+      - name: Verify ALAI health before commit
+        run: |
+          npm run alai:objective-3-final-audit
+          npm run alai:real-rating
+          npm run model:health
 
       - name: Commit learned ALAI state
         run: |
-          git config user.name "ALAI GitHub Learner"
+          git config user.name "ALAI Hybrid Learner"
           git config user.email "alai-bot@users.noreply.github.com"
 
-          git add data/alai.db package.json package-lock.json scripts .github/workflows || true
+          git add data/alai.db package.json package-lock.json scripts src .github/workflows || true
 
           if git diff --cached --quiet; then
             echo "No ALAI learning changes to commit."
           else
-            git commit -m "ALAI autonomous learning state update"
+            git commit -m "ALAI hybrid autonomous learning update"
             git pull --rebase origin "${GITHUB_REF_NAME}"
             git push origin "HEAD:${GITHUB_REF_NAME}"
           fi
