@@ -13,9 +13,11 @@ on:
         default: "2"
 
   schedule:
-    # Panama UTC-5. Day learning window.
-    # Runs every 2 hours from 7 AM to 10 PM Panama.
-    - cron: "0 12,14,16,18,20,22,0,2,3 * * *"
+    # Panama UTC-5.
+    # 6:00 AM - 9:00 PM Panama.
+    # Runs every 20 minutes. Each run works up to ~15 minutes.
+    - cron: "0,20,40 11-23 * * *"
+    - cron: "0,20,40 0-2 * * *"
 
 permissions:
   contents: write
