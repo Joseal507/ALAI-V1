@@ -42,6 +42,11 @@ jobs:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
+      ALAI_GITHUB_MODEL_KEY_1: ${{ secrets.ALAI_GITHUB_MODEL_KEY_1 }}
+      ALAI_GITHUB_MODEL_KEY_2: ${{ secrets.ALAI_GITHUB_MODEL_KEY_2 }}
+      ALAI_GITHUB_MODEL_KEY_3: ${{ secrets.ALAI_GITHUB_MODEL_KEY_3 }}
+      ALAI_GITHUB_MODEL_KEY_4: ${{ secrets.ALAI_GITHUB_MODEL_KEY_4 }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
