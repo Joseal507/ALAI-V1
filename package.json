@@ -290,7 +290,8 @@
     "alai:canonical-resolution-audit": "tsx scripts/alai-canonical-resolution-audit.ts",
     "alai:canonical-alias-resolver": "tsx scripts/alai-canonical-alias-resolver.ts",
     "alai:objective-3-final-audit": "tsx scripts/alai-objective-3-final-audit.ts",
-    "alai:question-concept-cleaner": "tsx scripts/alai-objective-3-question-concept-cleaner.ts"
+    "alai:question-concept-cleaner": "tsx scripts/alai-objective-3-question-concept-cleaner.ts",
+    "alai:github-day-loop": "tsx scripts/alai-github-day-loop.ts"
   },
   "keywords": [],
   "author": "",
