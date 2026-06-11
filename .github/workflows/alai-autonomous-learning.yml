@@ -113,6 +113,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Restore ALAI seed database
+        run: |
+          if [ -f data/alai.seed.db.gz ]; then
+            gunzip -c data/alai.seed.db.gz > data/alai.db
+          fi
+
       - name: Typecheck
         run: npm run typecheck
 
