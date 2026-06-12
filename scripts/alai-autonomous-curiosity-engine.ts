@@ -191,7 +191,7 @@ function insertExecutiveObjective(title: string, description: string, priority: 
       id,
       objective,
       description,
-      priority_score,
+      priority,
       status,
       created_at,
       updated_at
