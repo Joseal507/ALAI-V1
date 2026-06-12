@@ -93,21 +93,28 @@ async function main() {
 
   snapshot("BEFORE");
 
-  for (const item of commands) {
-    if (Date.now() - startedAt >= sessionMs) {
-      console.log("Session time reached. Ending command loop.");
-      break;
-    }
+  let cycle = 0;
 
-    const ok = run(item.command, item.timeoutMs);
+  while (Date.now() - startedAt < sessionMs) {
+    cycle++;
+    console.log(`\n========== DAY INNER CYCLE ${cycle} ==========`);
 
-    if (!ok) {
-      const message = `Command failed: ${item.command}`;
-      if (item.critical) {
-        console.error(message);
-        process.exit(1);
+    for (const item of commands) {
+      if (Date.now() - startedAt >= sessionMs) {
+        console.log("Session time reached. Ending command loop.");
+        break;
       }
-      console.warn(`${message}. Continuing because it is non-critical.`);
+
+      const ok = run(item.command, item.timeoutMs);
+
+      if (!ok) {
+        const message = `Command failed: ${item.command}`;
+        if (item.critical) {
+          console.error(message);
+          process.exit(1);
+        }
+        console.warn(`${message}. Continuing because it is non-critical.`);
+      }
     }
   }
 
