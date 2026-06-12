@@ -29,7 +29,7 @@ concurrency:
 jobs:
   learn:
     runs-on: ubuntu-latest
-    timeout-minutes: 355
+    timeout-minutes: 20
 
     env:
       ALAI_SESSION_MINUTES: ${{ github.event.inputs.session_minutes || '15' }}
@@ -126,7 +126,7 @@ jobs:
         run: npm run typecheck
 
       - name: Run governed ALAI hybrid learning loop
-        run: npm run alai:github-day-daemon
+        run: npm run alai:github-day-loop
 
       - name: Verify ALAI health before commit
         run: |
