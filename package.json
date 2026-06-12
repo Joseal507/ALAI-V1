@@ -312,7 +312,11 @@
     "alai:phase-8": "npm run alai:reasoning-breakthrough && npm run alai:reasoning-breakthrough-audit",
     "alai:phase-9": "npm run alai:executive-brain && npm run alai:executive-brain-audit",
     "alai:phase-10": "npm run alai:autonomous-expansion && npm run alai:autonomous-expansion-audit",
-    "alai:phase-8-9-10": "npm run alai:phase-8 && npm run alai:phase-9 && npm run alai:phase-10"
+    "alai:phase-8-9-10": "npm run alai:phase-8 && npm run alai:phase-9 && npm run alai:phase-10",
+    "alai:semantic-truth": "tsx scripts/alai-semantic-truth-reasoner.ts",
+    "alai:semantic-truth-audit": "tsx scripts/alai-semantic-truth-audit.ts",
+    "alai:semantic-truth-repair": "tsx scripts/alai-semantic-truth-repair.ts",
+    "alai:semantic-truth-cycle": "npm run alai:semantic-truth && npm run alai:semantic-truth-repair && npm run alai:semantic-truth-audit"
   },
   "keywords": [],
   "author": "",

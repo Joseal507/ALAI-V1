@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS alai_autonomous_expansion_runs (
 `);
 
 const commands = [
+  "npm run alai:semantic-truth-cycle",
   "npm run alai:research-gap-closer",
   "npm run alai:research-director",
   "npm run alai:research-governor",
