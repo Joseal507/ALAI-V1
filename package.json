@@ -356,7 +356,9 @@
     "alai:trace-court": "tsx scripts/alai-reasoning-trace-court.ts",
     "alai:trace-court-audit": "tsx scripts/alai-reasoning-trace-court-audit.ts",
     "alai:path-quality": "tsx scripts/alai-path-quality-governor.ts",
-    "alai:path-quality-audit": "tsx scripts/alai-path-quality-audit.ts"
+    "alai:path-quality-audit": "tsx scripts/alai-path-quality-audit.ts",
+    "alai:answer-synthesis": "tsx scripts/alai-answer-synthesis-brain.ts",
+    "alai:answer-synthesis-audit": "tsx scripts/alai-answer-synthesis-audit.ts"
   },
   "keywords": [],
   "author": "",
