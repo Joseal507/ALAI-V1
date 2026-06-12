@@ -163,7 +163,8 @@ for (const decision of decisions) {
     decision.decisionType === "RUN_RESEARCH_QUEUE"
       ? [
           "npm run alai:research-gap-closer",
-          "npm run alai:research-director",
+          "npm run alai:autonomous-discovery-cycle",
+            "npm run alai:research-director",
           "npm run alai:research-governor",
           "npm run alai:research-executor",
           "npm run alai:research-closure",

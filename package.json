@@ -319,7 +319,11 @@
     "alai:semantic-truth-cycle": "npm run alai:semantic-truth && npm run alai:semantic-truth-repair && npm run alai:semantic-truth-audit",
     "alai:executive-action": "tsx scripts/alai-executive-action-engine.ts",
     "alai:executive-action-audit": "tsx scripts/alai-executive-action-audit.ts",
-    "alai:executive-action-cycle": "npm run alai:executive-action && npm run alai:executive-action-audit"
+    "alai:executive-action-cycle": "npm run alai:executive-action && npm run alai:executive-action-audit",
+    "alai:autonomous-curiosity": "tsx scripts/alai-autonomous-curiosity-engine.ts",
+    "alai:world-model": "tsx scripts/alai-world-model-builder.ts",
+    "alai:autonomous-objective-audit": "tsx scripts/alai-autonomous-learning-objective-audit.ts",
+    "alai:autonomous-discovery-cycle": "tsx scripts/alai-autonomous-discovery-cycle.ts"
   },
   "keywords": [],
   "author": "",
