@@ -141,26 +141,49 @@ function getRelations(conceptIds: string[]) {
 }
 
 function getTraces(question: string, concepts: any[]) {
-  const q = normalize(question);
   const conceptTerms = concepts.flatMap(c => terms(c.name));
+  const questionTerms = terms(question);
+  const allowed = new Set([...conceptTerms, ...questionTerms]);
+
+  const toxic = [
+    "water utility",
+    "preening",
+    "schooling behavior",
+    "solitary hunter",
+    "aquatic locomotion",
+    "adaptive radiation",
+    "cat"
+  ];
+
   const filtered = db.prepare(`
     SELECT public_reasoning, conclusion, confidence_score
     FROM alai_reasoning_traces
     ORDER BY confidence_score DESC
-    LIMIT 500
+    LIMIT 1000
   `).all() as any[];
 
   const scored = filtered.map(t => {
     const text = normalize(`${t.public_reasoning} ${t.conclusion}`);
-    let score = 0;
-    for (const term of conceptTerms) {
-      if (text.split(" ").includes(term)) score += 1;
+    const words = text.split(" ");
+
+    if (toxic.some(x => text.includes(normalize(x)))) {
+      return {...t, score: -999};
     }
-    for (const term of terms(question)) {
-      if (text.split(" ").includes(term)) score += 1;
+
+    let overlap = 0;
+    for (const term of allowed) {
+      if (words.includes(term)) overlap++;
     }
+
+    const traceTerms = terms(text);
+    const irrelevantTerms = traceTerms.filter(t => !allowed.has(t)).length;
+    const relevance = overlap / Math.max(1, allowed.size);
+    const penalty = Math.min(0.4, irrelevantTerms / 200);
+
+    const score = relevance + Number(t.confidence_score || 0.5) * 0.25 - penalty;
+
     return {...t, score};
-  }).filter(t => t.score > 0);
+  }).filter(t => t.score > 0.12);
 
   scored.sort((a,b)=>b.score-a.score || b.confidence_score-a.confidence_score);
   return scored.slice(0,5);
