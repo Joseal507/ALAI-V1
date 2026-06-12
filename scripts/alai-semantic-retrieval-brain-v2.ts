@@ -85,38 +85,62 @@ LIMIT 5000
 const scoredConcepts = [];
 
 const normalizedQuestion = normalize(question);
+const qSet = new Set(qTerms);
+
+function containsWholePhrase(haystack: string, phraseTerms: string[]): boolean {
+  if (phraseTerms.length === 0) return false;
+
+  const words = haystack.split(" ");
+  for (let i = 0; i <= words.length - phraseTerms.length; i++) {
+    let ok = true;
+    for (let j = 0; j < phraseTerms.length; j++) {
+      if (words[i + j] !== phraseTerms[j]) {
+        ok = false;
+        break;
+      }
+    }
+    if (ok) return true;
+  }
+  return false;
+}
 
 for (const c of concepts) {
   const name = normalize(c.name);
   const nameTerms = terms(c.name);
+
+  if (nameTerms.length === 0) continue;
+
   let score = 0;
 
-  // Strongest signal: exact multi-word phrase match.
-  if (name.length >= 3 && normalizedQuestion.includes(name)) {
+  const phraseMatch = containsWholePhrase(normalizedQuestion, nameTerms);
+
+  // Strongest signal: exact full phrase with word boundaries.
+  if (phraseMatch) {
     score += 220 + nameTerms.length * 30;
   }
 
-  // Exact single-token match.
-  for (const term of qTerms) {
-    if (name === term) score += 100;
-    else if (name.includes(term)) score += 20;
-  }
+  // Exact token overlap only. No substring matching.
+  const covered = nameTerms.filter((term) => qSet.has(term)).length;
 
-  // Coverage: reward concepts that cover more query terms.
-  const covered = qTerms.filter((term) => name.includes(term)).length;
   if (covered > 0) {
-    score += covered * 25;
+    score += covered * 55;
+    score += (covered / Math.max(1, nameTerms.length)) * 60;
     score += (covered / Math.max(1, qTerms.length)) * 40;
   }
 
   // Specificity: prefer Machine Learning over Learning when both match.
-  if (nameTerms.length > 1 && covered >= 2) {
+  if (nameTerms.length > 1 && covered >= Math.min(2, nameTerms.length)) {
     score += nameTerms.length * 35;
   }
 
-  // Penalize overly general one-word concepts when a longer phrase is present.
-  if (nameTerms.length === 1 && qTerms.length >= 2 && covered === 1) {
-    score -= 45;
+  // Penalize overly general one-word concepts when query has a specific phrase.
+  if (nameTerms.length === 1 && qTerms.length >= 2 && covered === 1 && !phraseMatch) {
+    score -= 70;
+  }
+
+  // Avoid tiny accidental concepts unless exact whole-word query match.
+  if (nameTerms.length === 1 && nameTerms[0].length <= 3 && !qSet.has(nameTerms[0])) {
+    score = 0;
   }
 
   if (score > 0) {
