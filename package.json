@@ -350,7 +350,9 @@
     "alai:semantic-grounding": "tsx scripts/alai-semantic-grounding-governor.ts",
     "alai:reasoning-relevance-audit": "tsx scripts/alai-reasoning-relevance-audit.ts",
     "alai:semantic-answer": "tsx scripts/alai-semantic-answer-composer.ts",
-    "alai:semantic-answer-audit": "tsx scripts/alai-semantic-answer-audit.ts"
+    "alai:semantic-answer-audit": "tsx scripts/alai-semantic-answer-audit.ts",
+    "alai:relation-court": "tsx scripts/alai-semantic-relation-court.ts",
+    "alai:relation-court-audit": "tsx scripts/alai-relation-court-audit.ts"
   },
   "keywords": [],
   "author": "",
