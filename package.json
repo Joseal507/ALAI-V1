@@ -223,7 +223,7 @@
     "alai:research-guard": "tsx scripts/alai-active-domain-research-guard.ts",
     "alai:executive-brain": "tsx scripts/alai-executive-brain.ts",
     "alai:curiosity": "tsx scripts/alai-curiosity-engine.ts",
-    "alai:episodic-memory": "tsx scripts/alai-episodic-memory.ts",
+    "alai:episodic-memory": "tsx scripts/alai-episodic-memory-engine.ts",
     "alai:reward-engine": "tsx scripts/alai-reward-engine.ts",
     "alai:strategy-learning": "tsx scripts/alai-strategy-learning.ts",
     "alai:reasoning-exam": "tsx scripts/alai-reasoning-exam.ts",
@@ -323,7 +323,13 @@
     "alai:autonomous-curiosity": "tsx scripts/alai-autonomous-curiosity-engine.ts",
     "alai:world-model": "tsx scripts/alai-world-model-builder.ts",
     "alai:autonomous-objective-audit": "tsx scripts/alai-autonomous-learning-objective-audit.ts",
-    "alai:autonomous-discovery-cycle": "tsx scripts/alai-autonomous-discovery-cycle.ts"
+    "alai:autonomous-discovery-cycle": "tsx scripts/alai-autonomous-discovery-cycle.ts",
+    "alai:long-term-planner": "tsx scripts/alai-long-term-planner.ts",
+    "alai:conversation-learning": "tsx scripts/alai-conversation-learning-engine.ts",
+    "alai:belief-system": "tsx scripts/alai-belief-system-engine.ts",
+    "alai:agentic-cognition-audit": "tsx scripts/alai-agentic-cognition-audit.ts",
+    "alai:agentic-cognition-cycle": "tsx scripts/alai-agentic-cognition-cycle.ts",
+    "alai:cognitive-debt-governor": "tsx scripts/alai-cognitive-debt-governor.ts"
   },
   "keywords": [],
   "author": "",
