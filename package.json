@@ -329,7 +329,14 @@
     "alai:belief-system": "tsx scripts/alai-belief-system-engine.ts",
     "alai:agentic-cognition-audit": "tsx scripts/alai-agentic-cognition-audit.ts",
     "alai:agentic-cognition-cycle": "tsx scripts/alai-agentic-cognition-cycle.ts",
-    "alai:cognitive-debt-governor": "tsx scripts/alai-cognitive-debt-governor.ts"
+    "alai:cognitive-debt-governor": "tsx scripts/alai-cognitive-debt-governor.ts",
+    "alai:dual-mode-governor": "tsx scripts/alai-dual-mode-governor.ts",
+    "alai:pending-promotion-v2": "tsx scripts/alai-pending-promotion-v2.ts",
+    "alai:weak-domain-governor-v2": "tsx scripts/alai-weak-domain-governor-v2.ts",
+    "alai:belief-revision": "tsx scripts/alai-belief-revision-engine.ts",
+    "alai:episodic-experience": "tsx scripts/alai-episodic-experience-engine.ts",
+    "alai:agentic-governor-audit": "tsx scripts/alai-agentic-governor-audit.ts",
+    "alai:agentic-governor-cycle": "npm run alai:dual-mode-governor && npm run alai:agentic-governor-audit"
   },
   "keywords": [],
   "author": "",
