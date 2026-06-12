@@ -14,10 +14,9 @@ on:
 
   schedule:
     # Panama UTC-5.
-    # 6:00 AM - 9:00 PM Panama.
-    # Runs every 20 minutes. Each run works up to ~15 minutes.
-    - cron: "0,20,40 11-23 * * *"
-    - cron: "0,20,40 0-2 * * *"
+    # Starts long daytime learning daemons at 6 AM, 12 PM, and 6 PM Panama.
+    # Each daemon loops: 15 minutes learning, 2 minutes sleep, until the next block or 9 PM.
+    - cron: "0 11,17,23 * * *"
 
 permissions:
   contents: write
@@ -30,10 +29,12 @@ concurrency:
 jobs:
   learn:
     runs-on: ubuntu-latest
-    timeout-minutes: 18
+    timeout-minutes: 355
 
     env:
       ALAI_SESSION_MINUTES: ${{ github.event.inputs.session_minutes || '15' }}
+      ALAI_DAEMON_MAX_MINUTES: "340"
+      ALAI_WORK_MINUTES: "15"
       ALAI_SLEEP_SECONDS: "120"
       ALAI_MAX_CYCLES: ${{ github.event.inputs.max_cycles || '1' }}
 
@@ -125,7 +126,7 @@ jobs:
         run: npm run typecheck
 
       - name: Run governed ALAI hybrid learning loop
-        run: npm run alai:github-day-loop
+        run: npm run alai:github-day-daemon
 
       - name: Verify ALAI health before commit
         run: |
