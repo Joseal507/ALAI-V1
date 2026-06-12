@@ -84,13 +84,39 @@ LIMIT 5000
 
 const scoredConcepts = [];
 
+const normalizedQuestion = normalize(question);
+
 for (const c of concepts) {
   const name = normalize(c.name);
+  const nameTerms = terms(c.name);
   let score = 0;
 
+  // Strongest signal: exact multi-word phrase match.
+  if (name.length >= 3 && normalizedQuestion.includes(name)) {
+    score += 220 + nameTerms.length * 30;
+  }
+
+  // Exact single-token match.
   for (const term of qTerms) {
     if (name === term) score += 100;
     else if (name.includes(term)) score += 20;
+  }
+
+  // Coverage: reward concepts that cover more query terms.
+  const covered = qTerms.filter((term) => name.includes(term)).length;
+  if (covered > 0) {
+    score += covered * 25;
+    score += (covered / Math.max(1, qTerms.length)) * 40;
+  }
+
+  // Specificity: prefer Machine Learning over Learning when both match.
+  if (nameTerms.length > 1 && covered >= 2) {
+    score += nameTerms.length * 35;
+  }
+
+  // Penalize overly general one-word concepts when a longer phrase is present.
+  if (nameTerms.length === 1 && qTerms.length >= 2 && covered === 1) {
+    score -= 45;
   }
 
   if (score > 0) {
@@ -98,7 +124,7 @@ for (const c of concepts) {
 
     scoredConcepts.push({
       ...c,
-      score
+      score: Number(score.toFixed(3))
     });
   }
 }
