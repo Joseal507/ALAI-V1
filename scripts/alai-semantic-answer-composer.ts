@@ -162,11 +162,20 @@ function getTraces(question: string, concepts: any[]) {
     LIMIT 1000
   `).all() as any[];
 
+  const mainConceptTerms = concepts.length ? terms(concepts[0].name) : [];
+
   const scored = filtered.map(t => {
     const text = normalize(`${t.public_reasoning} ${t.conclusion}`);
     const words = text.split(" ");
 
     if (toxic.some(x => text.includes(normalize(x)))) {
+      return {...t, score: -999};
+    }
+
+    const mainOverlap = mainConceptTerms.filter(term => words.includes(term)).length;
+
+    // Hard gate: do not use a trace unless it directly mentions the main concept terms.
+    if (mainConceptTerms.length > 0 && mainOverlap === 0) {
       return {...t, score: -999};
     }
 
@@ -178,12 +187,17 @@ function getTraces(question: string, concepts: any[]) {
     const traceTerms = terms(text);
     const irrelevantTerms = traceTerms.filter(t => !allowed.has(t)).length;
     const relevance = overlap / Math.max(1, allowed.size);
-    const penalty = Math.min(0.4, irrelevantTerms / 200);
+    const mainBoost = mainOverlap / Math.max(1, mainConceptTerms.length);
+    const penalty = Math.min(0.5, irrelevantTerms / 120);
 
-    const score = relevance + Number(t.confidence_score || 0.5) * 0.25 - penalty;
+    const score =
+      relevance * 0.55 +
+      mainBoost * 0.35 +
+      Number(t.confidence_score || 0.5) * 0.15 -
+      penalty;
 
     return {...t, score};
-  }).filter(t => t.score > 0.12);
+  }).filter(t => t.score > 0.25);
 
   scored.sort((a,b)=>b.score-a.score || b.confidence_score-a.confidence_score);
   return scored.slice(0,5);
