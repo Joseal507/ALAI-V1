@@ -57,7 +57,7 @@ const ranked = concepts.map(c => {
 .slice(0,5);
 
 const beliefs = db.prepare(`
-SELECT belief,status,confidence_score
+SELECT claim AS belief,status,confidence_score
 FROM alai_beliefs
 ORDER BY confidence_score DESC
 LIMIT 100

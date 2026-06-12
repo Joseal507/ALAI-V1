@@ -2,6 +2,15 @@ import Database from "better-sqlite3";
 
 const db = new Database("data/alai.db");
 
+db.exec(`
+CREATE TABLE IF NOT EXISTS alai_answer_synthesis_runs (
+  id TEXT PRIMARY KEY,
+  question TEXT NOT NULL,
+  concepts_used INTEGER NOT NULL,
+  created_at TEXT NOT NULL
+);
+`);
+
 function n(sql: string): number {
   return Number((db.prepare(sql).get() as any)?.n ?? 0);
 }
