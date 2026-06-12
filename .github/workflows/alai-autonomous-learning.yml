@@ -22,7 +22,7 @@ on:
 
 permissions:
   contents: write
-  actions: read
+  actions: write
 
 concurrency:
   group: alai-hybrid-autonomous-learning
@@ -147,4 +147,20 @@ jobs:
             git commit -m "ALAI hybrid autonomous learning update"
             git pull --rebase origin "${GITHUB_REF_NAME}"
             git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+
+      - name: Trigger next daytime ALAI run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          PANAMA_HOUR=$(TZ=America/Panama date +%H)
+          PANAMA_MINUTE=$(TZ=America/Panama date +%M)
+
+          echo "Panama time: ${PANAMA_HOUR}:${PANAMA_MINUTE}"
+
+          if [ "$PANAMA_HOUR" -ge 6 ] && [ "$PANAMA_HOUR" -lt 21 ]; then
+            echo "Inside daytime window. Triggering next ALAI run."
+            gh workflow run alai-autonomous-learning.yml               --ref "${GITHUB_REF_NAME}"               -f session_minutes=15               -f max_cycles=1
+          else
+            echo "Outside daytime window. Not triggering next run."
           fi
