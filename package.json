@@ -354,7 +354,9 @@
     "alai:relation-court": "tsx scripts/alai-semantic-relation-court.ts",
     "alai:relation-court-audit": "tsx scripts/alai-relation-court-audit.ts",
     "alai:trace-court": "tsx scripts/alai-reasoning-trace-court.ts",
-    "alai:trace-court-audit": "tsx scripts/alai-reasoning-trace-court-audit.ts"
+    "alai:trace-court-audit": "tsx scripts/alai-reasoning-trace-court-audit.ts",
+    "alai:path-quality": "tsx scripts/alai-path-quality-governor.ts",
+    "alai:path-quality-audit": "tsx scripts/alai-path-quality-audit.ts"
   },
   "keywords": [],
   "author": "",

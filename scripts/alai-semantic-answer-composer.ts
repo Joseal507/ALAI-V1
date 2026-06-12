@@ -158,6 +158,7 @@ function getTraces(question: string, concepts: any[]) {
   const filtered = db.prepare(`
     SELECT public_reasoning, conclusion, confidence_score
     FROM alai_reasoning_traces
+    WHERE COALESCE(status,'READY')!='WEAK'
     ORDER BY confidence_score DESC
     LIMIT 1000
   `).all() as any[];
