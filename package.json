@@ -303,7 +303,16 @@
     "alai:domain-governor": "tsx scripts/alai-domain-governor.ts",
     "alai:domain-governor-audit": "tsx scripts/alai-domain-governor-audit.ts",
     "alai:phase-6": "npm run alai:curriculum-auto-map && npm run alai:prereq-repair && npm run alai:curriculum-autonomy && npm run curriculum:completion-sync && npm run curriculum:completion && npm run curriculum:rollup && npm run alai:education-stage && npm run alai:curriculum-autonomy-audit",
-    "alai:phase-7": "npm run alai:domain-governor && npm run alai:research-director && npm run alai:research-governor && npm run alai:domain-governor-audit"
+    "alai:phase-7": "npm run alai:domain-governor && npm run alai:research-director && npm run alai:research-governor && npm run alai:domain-governor-audit",
+    "alai:reasoning-breakthrough": "tsx scripts/alai-reasoning-breakthrough.ts",
+    "alai:reasoning-breakthrough-audit": "tsx scripts/alai-reasoning-breakthrough-audit.ts",
+    "alai:executive-brain-audit": "tsx scripts/alai-executive-brain-audit.ts",
+    "alai:autonomous-expansion": "tsx scripts/alai-autonomous-expansion-orchestrator.ts",
+    "alai:autonomous-expansion-audit": "tsx scripts/alai-autonomous-expansion-audit.ts",
+    "alai:phase-8": "npm run alai:reasoning-breakthrough && npm run alai:reasoning-breakthrough-audit",
+    "alai:phase-9": "npm run alai:executive-brain && npm run alai:executive-brain-audit",
+    "alai:phase-10": "npm run alai:autonomous-expansion && npm run alai:autonomous-expansion-audit",
+    "alai:phase-8-9-10": "npm run alai:phase-8 && npm run alai:phase-9 && npm run alai:phase-10"
   },
   "keywords": [],
   "author": "",
