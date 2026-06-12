@@ -345,7 +345,10 @@
     "alai:conversational-reasoning": "tsx scripts/alai-conversational-reasoning-brain.ts",
     "alai:conversational-reasoning-audit": "tsx scripts/alai-conversational-reasoning-audit.ts",
     "alai:chat-agentic": "tsx scripts/alai-chat-agentic.ts",
-    "alai:conversation-competitive-audit": "tsx scripts/alai-conversation-competitive-audit.ts"
+    "alai:conversation-competitive-audit": "tsx scripts/alai-conversation-competitive-audit.ts",
+    "alai:semantic-retrieval": "tsx scripts/alai-semantic-retrieval-brain-v2.ts",
+    "alai:semantic-grounding": "tsx scripts/alai-semantic-grounding-governor.ts",
+    "alai:reasoning-relevance-audit": "tsx scripts/alai-reasoning-relevance-audit.ts"
   },
   "keywords": [],
   "author": "",
