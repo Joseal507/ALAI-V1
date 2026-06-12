@@ -341,7 +341,11 @@
     "alai:chain-reasoning": "tsx scripts/alai-chain-of-thought-simulator.ts",
     "alai:answer-quality": "tsx scripts/alai-answer-quality-evaluator.ts",
     "alai:competitive-readiness-audit": "tsx scripts/alai-competitive-readiness-audit.ts",
-    "alai:competitive-upgrade-cycle": "tsx scripts/alai-competitive-upgrade-cycle.ts"
+    "alai:competitive-upgrade-cycle": "tsx scripts/alai-competitive-upgrade-cycle.ts",
+    "alai:conversational-reasoning": "tsx scripts/alai-conversational-reasoning-brain.ts",
+    "alai:conversational-reasoning-audit": "tsx scripts/alai-conversational-reasoning-audit.ts",
+    "alai:chat-agentic": "tsx scripts/alai-chat-agentic.ts",
+    "alai:conversation-competitive-audit": "tsx scripts/alai-conversation-competitive-audit.ts"
   },
   "keywords": [],
   "author": "",
