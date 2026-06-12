@@ -6,17 +6,19 @@ on:
       session_minutes:
         description: "Minutes to learn in this run"
         required: false
-        default: "18"
+        default: "15"
       max_cycles:
         description: "Max governed cycles inside this run"
         required: false
-        default: "2"
+        default: "1"
 
   schedule:
     # Panama UTC-5.
-    # Starts long daytime learning daemons at 6 AM, 12 PM, and 6 PM Panama.
-    # Each daemon loops: 15 minutes learning, 2 minutes sleep, until the next block or 9 PM.
-    - cron: "0 11,17,23 * * *"
+    # 6:00 AM - 9:00 PM Panama.
+    # GitHub starts a new run every 20 minutes.
+    # Each run learns for ~15 minutes, sleeps 2 minutes, then exits.
+    - cron: "0,20,40 11-23 * * *"
+    - cron: "0,20,40 0-2 * * *"
 
 permissions:
   contents: write
@@ -33,8 +35,6 @@ jobs:
 
     env:
       ALAI_SESSION_MINUTES: ${{ github.event.inputs.session_minutes || '15' }}
-      ALAI_DAEMON_MAX_MINUTES: "340"
-      ALAI_WORK_MINUTES: "15"
       ALAI_SLEEP_SECONDS: "120"
       ALAI_MAX_CYCLES: ${{ github.event.inputs.max_cycles || '1' }}
 
