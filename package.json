@@ -316,7 +316,10 @@
     "alai:semantic-truth": "tsx scripts/alai-semantic-truth-reasoner.ts",
     "alai:semantic-truth-audit": "tsx scripts/alai-semantic-truth-audit.ts",
     "alai:semantic-truth-repair": "tsx scripts/alai-semantic-truth-repair.ts",
-    "alai:semantic-truth-cycle": "npm run alai:semantic-truth && npm run alai:semantic-truth-repair && npm run alai:semantic-truth-audit"
+    "alai:semantic-truth-cycle": "npm run alai:semantic-truth && npm run alai:semantic-truth-repair && npm run alai:semantic-truth-audit",
+    "alai:executive-action": "tsx scripts/alai-executive-action-engine.ts",
+    "alai:executive-action-audit": "tsx scripts/alai-executive-action-audit.ts",
+    "alai:executive-action-cycle": "npm run alai:executive-action && npm run alai:executive-action-audit"
   },
   "keywords": [],
   "author": "",
