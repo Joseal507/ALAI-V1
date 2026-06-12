@@ -2,14 +2,23 @@ import Database from "better-sqlite3";
 
 const db = new Database("data/alai.db");
 
+function tableExists(name: string): boolean {
+  return !!db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name=?").get(name);
+}
+
 function n(sql: string): number {
   return Number((db.prepare(sql).get() as any)?.n ?? 0);
+}
+
+function countTable(table: string): number {
+  if (!tableExists(table)) return 0;
+  return n(`SELECT COUNT(*) AS n FROM ${table}`);
 }
 
 const snapshot = {
   dualModeRuns: n(`SELECT COUNT(*) AS n FROM alai_dual_mode_governor_runs`),
   pendingPromotionRuns: n(`SELECT COUNT(*) AS n FROM alai_pending_promotion_v2_runs`),
-  weakDomainRuns: n(`SELECT COUNT(*) AS n FROM alai_weak_domain_governor_v2_runs`),
+  weakDomainRuns: countTable("alai_weak_domain_governor_v2_runs"),
   beliefRevisionRuns: n(`SELECT COUNT(*) AS n FROM alai_belief_revision_runs`),
   episodicExperienceRuns: n(`SELECT COUNT(*) AS n FROM alai_episodic_experience_runs`),
   openResearch: n(`SELECT COUNT(*) AS n FROM alai_research_questions WHERE status='OPEN'`),

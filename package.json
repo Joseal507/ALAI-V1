@@ -336,7 +336,12 @@
     "alai:belief-revision": "tsx scripts/alai-belief-revision-engine.ts",
     "alai:episodic-experience": "tsx scripts/alai-episodic-experience-engine.ts",
     "alai:agentic-governor-audit": "tsx scripts/alai-agentic-governor-audit.ts",
-    "alai:agentic-governor-cycle": "npm run alai:dual-mode-governor && npm run alai:agentic-governor-audit"
+    "alai:agentic-governor-cycle": "npm run alai:dual-mode-governor && npm run alai:agentic-governor-audit",
+    "alai:deep-reasoning-governor": "tsx scripts/alai-deep-reasoning-governor.ts",
+    "alai:chain-reasoning": "tsx scripts/alai-chain-of-thought-simulator.ts",
+    "alai:answer-quality": "tsx scripts/alai-answer-quality-evaluator.ts",
+    "alai:competitive-readiness-audit": "tsx scripts/alai-competitive-readiness-audit.ts",
+    "alai:competitive-upgrade-cycle": "tsx scripts/alai-competitive-upgrade-cycle.ts"
   },
   "keywords": [],
   "author": "",
