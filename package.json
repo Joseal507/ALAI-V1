@@ -292,7 +292,11 @@
     "alai:objective-3-final-audit": "tsx scripts/alai-objective-3-final-audit.ts",
     "alai:question-concept-cleaner": "tsx scripts/alai-objective-3-question-concept-cleaner.ts",
     "alai:github-day-loop": "tsx scripts/alai-github-day-loop.ts",
-    "alai:github-day-daemon": "tsx scripts/alai-github-day-daemon.ts"
+    "alai:github-day-daemon": "tsx scripts/alai-github-day-daemon.ts",
+    "alai:research-director": "tsx scripts/alai-research-director.ts",
+    "alai:research-gap-closer": "tsx scripts/alai-research-gap-closer.ts",
+    "alai:research-director-audit": "tsx scripts/alai-research-director-audit.ts",
+    "alai:phase-5": "npm run alai:research-gap-closer && npm run alai:research-director && npm run alai:research-governor && npm run alai:research-executor && npm run alai:research-closure && npm run alai:research-gap-closer && npm run alai:research-director-audit"
   },
   "keywords": [],
   "author": "",
@@ -319,5 +323,6 @@
   "alai:provider-audit": "tsx scripts/alai-provider-audit.ts",
   "alai:reasoning-graph-bridge": "tsx scripts/alai-reasoning-graph-bridge.ts",
   "alai:objective-1": "tsx scripts/alai-objective-1-functional-autonomy.ts",
-  "alai:objective-3-final-fix": "tsx scripts/alai-final-response-problem-fixer.ts"
+  "alai:objective-3-final-fix": "tsx scripts/alai-final-response-problem-fixer.ts",
+  "alai:research-director-audit": "tsx scripts/alai-research-director-audit.ts"
 }

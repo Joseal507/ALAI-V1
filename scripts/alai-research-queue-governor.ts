@@ -3,22 +3,6 @@ import Database from "better-sqlite3";
 const db = new Database("data/alai.db");
 const now = new Date().toISOString();
 
-const hasConceptId = db.prepare(`
-  SELECT COUNT(*) AS count
-  FROM pragma_table_info('alai_research_questions')
-  WHERE name = 'concept_id'
-`).get() as { count: number };
-
-const hasQuestionType = db.prepare(`
-  SELECT COUNT(*) AS count
-  FROM pragma_table_info('alai_research_questions')
-  WHERE name = 'question_type'
-`).get() as { count: number };
-
-if (hasConceptId.count === 0) {
-  throw new Error("alai_research_questions needs concept_id for safe governance.");
-}
-
 const closeAlreadyVerified = db.prepare(`
   UPDATE alai_research_questions
   SET status = 'ANSWERED',
@@ -54,31 +38,20 @@ const rejectLowValue = db.prepare(`
     )
 `);
 
-const rejectDuplicates = hasQuestionType.count > 0
-  ? db.prepare(`
-      UPDATE alai_research_questions
-      SET status = 'REJECTED',
-          updated_at = ?
+const rejectDuplicates = db.prepare(`
+  UPDATE alai_research_questions
+  SET status = 'REJECTED',
+      updated_at = ?
+  WHERE status = 'OPEN'
+    AND id NOT IN (
+      SELECT MIN(id)
+      FROM alai_research_questions
       WHERE status = 'OPEN'
-        AND id NOT IN (
-          SELECT MIN(id)
-          FROM alai_research_questions
-          WHERE status = 'OPEN'
-          GROUP BY concept_id, question_type
-        )
-    `)
-  : db.prepare(`
-      UPDATE alai_research_questions
-      SET status = 'REJECTED',
-          updated_at = ?
-      WHERE status = 'OPEN'
-        AND id NOT IN (
-          SELECT MIN(id)
-          FROM alai_research_questions
-          WHERE status = 'OPEN'
-          GROUP BY concept_id
-        )
-    `);
+      GROUP BY
+        COALESCE(concept_id, topic_id, question),
+        question_type
+    )
+`);
 
 const a = closeAlreadyVerified.run(now).changes;
 const b = rejectDuplicates.run(now).changes;
@@ -99,12 +72,13 @@ console.table(db.prepare(`
 
 console.table(db.prepare(`
   SELECT
-    c.name AS concept,
+    COALESCE(c.name, t.name, 'Unknown') AS target,
     q.status,
-    ${hasQuestionType.count > 0 ? "q.question_type" : "'' AS question_type"},
+    q.question_type,
     q.priority_score
   FROM alai_research_questions q
-  JOIN concepts c ON c.id = q.concept_id
+  LEFT JOIN concepts c ON c.id = q.concept_id
+  LEFT JOIN curriculum_topics t ON t.id = q.topic_id
   WHERE q.status = 'OPEN'
   ORDER BY q.priority_score DESC, q.updated_at ASC
   LIMIT 40
