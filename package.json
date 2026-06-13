@@ -413,7 +413,9 @@
     "alai:v12-answer": "tsx scripts/alai-v12-graph-grounded-answer.ts",
     "alai:v12-regression": "tsx scripts/alai-v12-regression.ts",
     "alai:v13-answer": "tsx scripts/alai-v13-language-expression-answer.ts",
-    "alai:v13-language-regression": "tsx scripts/alai-v13-language-regression.ts"
+    "alai:v13-language-regression": "tsx scripts/alai-v13-language-regression.ts",
+    "alai:v14-answer": "tsx scripts/alai-v14-on-demand-answer.ts",
+    "alai:v14-regression": "tsx scripts/alai-v14-on-demand-regression.ts"
   },
   "keywords": [],
   "author": "",
