@@ -406,7 +406,9 @@
     "alai:v9-answer": "tsx scripts/alai-v9-retrieval-ranking-engine.ts",
     "alai:v9-pipeline-regression": "tsx scripts/alai-v9-pipeline-regression.ts",
     "alai:v10-answer": "tsx scripts/alai-v10-reasoning-synthesis-answer.ts",
-    "alai:v10-synthesis-regression": "tsx scripts/alai-v10-synthesis-regression.ts"
+    "alai:v10-synthesis-regression": "tsx scripts/alai-v10-synthesis-regression.ts",
+    "alai:v11-answer": "tsx scripts/alai-v11-semantic-relevance-court.ts",
+    "alai:v11-regression": "tsx scripts/alai-v11-semantic-court-regression.ts"
   },
   "keywords": [],
   "author": "",
