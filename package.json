@@ -411,7 +411,9 @@
     "alai:v11-regression": "tsx scripts/alai-v11-semantic-court-regression.ts",
     "alai:v12-bridges": "tsx scripts/alai-v12-core-knowledge-bridges.ts",
     "alai:v12-answer": "tsx scripts/alai-v12-graph-grounded-answer.ts",
-    "alai:v12-regression": "tsx scripts/alai-v12-regression.ts"
+    "alai:v12-regression": "tsx scripts/alai-v12-regression.ts",
+    "alai:v13-answer": "tsx scripts/alai-v13-language-expression-answer.ts",
+    "alai:v13-language-regression": "tsx scripts/alai-v13-language-regression.ts"
   },
   "keywords": [],
   "author": "",
