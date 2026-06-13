@@ -408,7 +408,10 @@
     "alai:v10-answer": "tsx scripts/alai-v10-reasoning-synthesis-answer.ts",
     "alai:v10-synthesis-regression": "tsx scripts/alai-v10-synthesis-regression.ts",
     "alai:v11-answer": "tsx scripts/alai-v11-semantic-relevance-court.ts",
-    "alai:v11-regression": "tsx scripts/alai-v11-semantic-court-regression.ts"
+    "alai:v11-regression": "tsx scripts/alai-v11-semantic-court-regression.ts",
+    "alai:v12-bridges": "tsx scripts/alai-v12-core-knowledge-bridges.ts",
+    "alai:v12-answer": "tsx scripts/alai-v12-graph-grounded-answer.ts",
+    "alai:v12-regression": "tsx scripts/alai-v12-regression.ts"
   },
   "keywords": [],
   "author": "",
