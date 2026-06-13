@@ -397,7 +397,8 @@
     "alai:v6-tool-agent": "tsx scripts/alai-v6-tool-agent-ecosystem.ts",
     "alai:v6-readiness": "tsx scripts/alai-v6-readiness-audit.ts",
     "alai:v6-ratings": "tsx scripts/alai-v6-ratings.ts",
-    "alai:v6-core": "tsx scripts/alai-v6-core-cycle.ts"
+    "alai:v6-core": "tsx scripts/alai-v6-core-cycle.ts",
+    "alai:dashboard": "tsx scripts/alai-live-dashboard.ts"
   },
   "keywords": [],
   "author": "",
