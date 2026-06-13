@@ -389,7 +389,15 @@
     "alai:v5-curriculum-impact": "tsx scripts/alai-v5-curriculum-impact-engine.ts",
     "alai:v5-domain-impact-audit": "tsx scripts/alai-v5-domain-impact-audit.ts",
     "alai:v5-full-impact-cycle": "tsx scripts/alai-v5-full-impact-cycle.ts",
-    "alai:ratings": "tsx scripts/alai-ratings.ts"
+    "alai:ratings": "tsx scripts/alai-ratings.ts",
+    "alai:v6-conversation": "tsx scripts/alai-v6-conversational-intelligence.ts",
+    "alai:v6-deep-reasoning": "tsx scripts/alai-v6-deep-reasoning.ts",
+    "alai:v6-agent-execution": "tsx scripts/alai-v6-agent-execution.ts",
+    "alai:v6-self-improvement": "tsx scripts/alai-v6-self-improvement-loop.ts",
+    "alai:v6-tool-agent": "tsx scripts/alai-v6-tool-agent-ecosystem.ts",
+    "alai:v6-readiness": "tsx scripts/alai-v6-readiness-audit.ts",
+    "alai:v6-ratings": "tsx scripts/alai-v6-ratings.ts",
+    "alai:v6-core": "tsx scripts/alai-v6-core-cycle.ts"
   },
   "keywords": [],
   "author": "",
