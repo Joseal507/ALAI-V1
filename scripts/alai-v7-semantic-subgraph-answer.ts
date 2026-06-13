@@ -88,6 +88,22 @@ const aliasTargets = aliasRows
   .filter((a:any) => qNorm.includes(norm(a.phrase)))
   .map((a:any) => String(a.canonical_name));
 
+const bridgeRows = rows(`
+SELECT trigger_phrase, target_concept, reason, priority_score
+FROM alai_v8_chat_bridge_rules
+WHERE status='ACTIVE'
+ORDER BY priority_score DESC
+`);
+
+const bridgeTargets = bridgeRows
+  .filter((b:any) => {
+    const triggerTerms = terms(String(b.trigger_phrase || ""));
+    return triggerTerms.length > 0 && triggerTerms.every(t => qNorm.includes(t));
+  })
+  .map((b:any) => String(b.target_concept));
+
+const forcedTargets = [...new Set([...aliasTargets, ...bridgeTargets])];
+
 const mode = intent(question);
 
 const allConcepts = rows(`
@@ -98,9 +114,10 @@ LIMIT 12000
 `);
 
 const bannedGeneral = new Set([
-  "one","two","three","animal","animals","science","mode","stem","learning",
+  "one","two","three","science","mode","stem","learning",
   "education","family","body parts","ancient greek education","situated learning",
-  "learning styles","pattern recognition"
+  "learning styles","pattern recognition","ox","red","red blue red blue",
+  "green red component a"
 ]);
 
 function scoreConcept(c: any): number {
@@ -111,8 +128,8 @@ function scoreConcept(c: any): number {
 
   let score = 0;
 
-  for (const target of aliasTargets) {
-    if (cNorm === norm(target)) score += 900;
+  for (const target of forcedTargets) {
+    if (cNorm === norm(target)) score += 1200;
   }
 
   if (qNorm.includes(cNorm)) score += 500 + cTerms.length * 80;
@@ -125,8 +142,8 @@ function scoreConcept(c: any): number {
   score += overlap * 110;
 
   if (cTerms.length > 1 && overlap >= Math.min(2, cTerms.length)) score += 160;
-  const aliasMatched = aliasTargets.some(t => cNorm === norm(t));
-  if (cTerms.length === 1 && qTerms.length >= 3 && overlap === 1 && !qNorm.includes(cNorm) && !aliasMatched) score -= 260;
+  const aliasMatched = forcedTargets.some(t => cNorm === norm(t));
+  if (cTerms.length === 1 && qTerms.length >= 3 && overlap === 1 && !qNorm.includes(cNorm) && !aliasMatched) score -= 360;
 
   if (String(c.status) === "CANONICAL") score += 40;
   if (String(c.status) === "VERIFIED") score += 30;
