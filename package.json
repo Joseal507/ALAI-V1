@@ -371,7 +371,14 @@
     "alai:v2-answer": "tsx scripts/alai-v2-real-answer-generator.ts",
     "alai:v2-real-answer-generator-audit": "tsx scripts/alai-v2-real-answer-generator-audit.ts",
     "alai:v2-readiness": "tsx scripts/alai-v2-readiness-audit.ts",
-    "alai:v2-core": "tsx scripts/alai-v2-core.ts"
+    "alai:v2-core": "tsx scripts/alai-v2-core.ts",
+    "alai:v3-answer": "tsx scripts/alai-v3-neural-answer-layer.ts",
+    "alai:v3-answer-audit": "tsx scripts/alai-v3-answer-audit.ts",
+    "alai:v3-curriculum-executor": "tsx scripts/alai-v3-curriculum-executor.ts",
+    "alai:v3-domain-intelligence": "tsx scripts/alai-v3-domain-intelligence.ts",
+    "alai:v3-conversation-self-learning": "tsx scripts/alai-v3-conversation-self-learning.ts",
+    "alai:v3-full-intelligence-cycle": "tsx scripts/alai-v3-full-intelligence-cycle.ts",
+    "alai:v3-readiness": "tsx scripts/alai-v3-readiness-audit.ts"
   },
   "keywords": [],
   "author": "",
