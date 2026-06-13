@@ -358,7 +358,10 @@
     "alai:path-quality": "tsx scripts/alai-path-quality-governor.ts",
     "alai:path-quality-audit": "tsx scripts/alai-path-quality-audit.ts",
     "alai:answer-synthesis": "tsx scripts/alai-answer-synthesis-brain.ts",
-    "alai:answer-synthesis-audit": "tsx scripts/alai-answer-synthesis-audit.ts"
+    "alai:answer-synthesis-audit": "tsx scripts/alai-answer-synthesis-audit.ts",
+    "alai:curriculum-autonomous-governor": "tsx scripts/alai-curriculum-autonomous-governor.ts",
+    "alai:research-auto-closer": "tsx scripts/alai-research-auto-closer.ts",
+    "alai:true-autonomy-readiness": "tsx scripts/alai-true-autonomy-readiness-audit.ts"
   },
   "keywords": [],
   "author": "",
