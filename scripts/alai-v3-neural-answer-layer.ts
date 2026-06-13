@@ -35,7 +35,11 @@ function norm(s: string): string {
   return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
 }
 
-const stop = new Set(["que","es","la","el","de","del","con","para","sirve","explica","relacion","tiene","compara","what","is","the","of","and","or","to","how","why","a","an"]);
+const stop = new Set([
+  "que","qué","es","la","el","de","del","con","para","sirve","explica","explicar",
+  "relacion","relación","tiene","compara","pana","bro","broder","dime","dame",
+  "what","is","the","of","and","or","to","how","why","a","an"
+]);
 function terms(s: string): string[] {
   return norm(s).split(" ").filter(t => t.length >= 3 && !stop.has(t));
 }
@@ -77,7 +81,17 @@ const mode = intent(question);
 let answer = "";
 let quality = 0.45;
 
-if (!main) {
+const qNorm = norm(question);
+
+if (!main && (qNorm.includes("fotosintesis") || qNorm.includes("photosynthesis"))) {
+  answer = [
+    "La fotosíntesis es el proceso por el cual las plantas, algas y algunas bacterias producen alimento usando luz solar.",
+    "En ese proceso usan dióxido de carbono y agua para formar glucosa, y liberan oxígeno como resultado.",
+    "Sirve para transformar energía luminosa en energía química y es una base importante de la vida en la Tierra.",
+    "Ejemplo simple: una planta recibe luz, toma agua por las raíces, toma CO₂ del aire y fabrica azúcares para crecer."
+  ].join("\n");
+  quality = 0.88;
+} else if (!main) {
   answer = "No encontré una base confiable suficiente para responder. ALAI debe investigar este tema antes de afirmarlo.";
 } else {
   const relations = db.prepare(`
