@@ -3,6 +3,7 @@ import { spawnSync } from "node:child_process";
 const steps = [
   "alai:v3-domain-intelligence",
   "alai:v3-curriculum-executor",
+  "alai:v3-answer-audit",
   "alai:v3-conversation-self-learning",
   "alai:research-auto-closer",
   "alai:cognitive-debt-governor",
@@ -13,7 +14,6 @@ const steps = [
   "alai:relation-court",
   "alai:trace-court",
   "alai:path-quality",
-  "alai:v3-answer-audit",
   "alai:v3-readiness",
   "model:health"
 ];

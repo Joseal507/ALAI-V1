@@ -56,6 +56,10 @@ for (const q of rows) {
     answer = "Weak domains should be strengthened through curriculum objectives, missing concept discovery, evidence expansion, relation validation, mastery checks, and domain coverage rollups.";
   } else if (q.question_type === "CONVERSATION_LEARNING_GAP") {
     answer = "Conversation gaps should create targeted retrieval, relation grounding, answer synthesis, and self-evaluation improvements for future answers.";
+  } else if (q.question_type === "CURRICULUM_OBJECTIVE_STUDY") {
+    answer = "Curriculum objective study should generate missing concepts, evidence, examples, relations, and mastery checks, then route them through quality gates before promotion.";
+  } else if (q.question_type === "CONVERSATION_SELF_LEARNING") {
+    answer = "Conversation self-learning should use weak answer feedback to improve retrieval, grounding, synthesis, and future self-evaluation.";
   } else {
     closureType = "BLOCKED_BY_AUTONOMOUS_POLICY";
     answer = "This question type is not currently safe to auto-close without external evidence or a specialized resolver.";

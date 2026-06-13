@@ -14,6 +14,15 @@ CREATE TABLE IF NOT EXISTS alai_v3_conversation_self_learning_runs (
   lessons_created INTEGER NOT NULL DEFAULT 0,
   status TEXT NOT NULL DEFAULT 'RUNNING'
 );
+
+CREATE TABLE IF NOT EXISTS alai_conversational_learning_feedback (
+  id TEXT PRIMARY KEY,
+  question TEXT NOT NULL,
+  answer TEXT NOT NULL,
+  score REAL NOT NULL,
+  gap_detected TEXT NOT NULL DEFAULT '',
+  created_at TEXT NOT NULL
+);
 `);
 
 const runId = crypto.randomUUID();
