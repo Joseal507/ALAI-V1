@@ -76,6 +76,18 @@ function get<T=any>(sql: string, params: any[] = []): T | null {
 const qNorm = norm(question);
 const qTerms = terms(question);
 const qSet = new Set(qTerms);
+
+const aliasRows = rows(`
+SELECT phrase, canonical_name, domain_hint, priority_score
+FROM alai_v7_entity_aliases
+WHERE status='ACTIVE'
+ORDER BY priority_score DESC
+`);
+
+const aliasTargets = aliasRows
+  .filter((a:any) => qNorm.includes(norm(a.phrase)))
+  .map((a:any) => String(a.canonical_name));
+
 const mode = intent(question);
 
 const allConcepts = rows(`
@@ -99,6 +111,10 @@ function scoreConcept(c: any): number {
 
   let score = 0;
 
+  for (const target of aliasTargets) {
+    if (cNorm === norm(target)) score += 900;
+  }
+
   if (qNorm.includes(cNorm)) score += 500 + cTerms.length * 80;
 
   let overlap = 0;
@@ -109,7 +125,8 @@ function scoreConcept(c: any): number {
   score += overlap * 110;
 
   if (cTerms.length > 1 && overlap >= Math.min(2, cTerms.length)) score += 160;
-  if (cTerms.length === 1 && qTerms.length >= 3 && overlap === 1 && !qNorm.includes(cNorm)) score -= 160;
+  const aliasMatched = aliasTargets.some(t => cNorm === norm(t));
+  if (cTerms.length === 1 && qTerms.length >= 3 && overlap === 1 && !qNorm.includes(cNorm) && !aliasMatched) score -= 260;
 
   if (String(c.status) === "CANONICAL") score += 40;
   if (String(c.status) === "VERIFIED") score += 30;
