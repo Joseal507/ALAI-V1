@@ -378,7 +378,14 @@
     "alai:v3-domain-intelligence": "tsx scripts/alai-v3-domain-intelligence.ts",
     "alai:v3-conversation-self-learning": "tsx scripts/alai-v3-conversation-self-learning.ts",
     "alai:v3-full-intelligence-cycle": "tsx scripts/alai-v3-full-intelligence-cycle.ts",
-    "alai:v3-readiness": "tsx scripts/alai-v3-readiness-audit.ts"
+    "alai:v3-readiness": "tsx scripts/alai-v3-readiness-audit.ts",
+    "alai:v4-executive-reasoning": "tsx scripts/alai-v4-executive-reasoning-engine.ts",
+    "alai:v4-tool-use": "tsx scripts/alai-v4-tool-use-brain.ts",
+    "alai:v4-world-model": "tsx scripts/alai-v4-world-model-v2.ts",
+    "alai:v4-infinite-curriculum-loop": "tsx scripts/alai-v4-infinite-curriculum-loop.ts",
+    "alai:v4-self-improvement": "tsx scripts/alai-v4-self-improvement-engine.ts",
+    "alai:v4-readiness": "tsx scripts/alai-v4-readiness-audit.ts",
+    "alai:v4-core": "tsx scripts/alai-v4-core-cycle.ts"
   },
   "keywords": [],
   "author": "",
