@@ -404,7 +404,9 @@
     "alai:v8-chat-grounding-repair": "tsx scripts/alai-v8-chat-grounding-repair.ts",
     "alai:v8-chat-quality-regression": "tsx scripts/alai-v8-chat-quality-regression.ts",
     "alai:v9-answer": "tsx scripts/alai-v9-retrieval-ranking-engine.ts",
-    "alai:v9-pipeline-regression": "tsx scripts/alai-v9-pipeline-regression.ts"
+    "alai:v9-pipeline-regression": "tsx scripts/alai-v9-pipeline-regression.ts",
+    "alai:v10-answer": "tsx scripts/alai-v10-reasoning-synthesis-answer.ts",
+    "alai:v10-synthesis-regression": "tsx scripts/alai-v10-synthesis-regression.ts"
   },
   "keywords": [],
   "author": "",
