@@ -385,7 +385,11 @@
     "alai:v4-infinite-curriculum-loop": "tsx scripts/alai-v4-infinite-curriculum-loop.ts",
     "alai:v4-self-improvement": "tsx scripts/alai-v4-self-improvement-engine.ts",
     "alai:v4-readiness": "tsx scripts/alai-v4-readiness-audit.ts",
-    "alai:v4-core": "tsx scripts/alai-v4-core-cycle.ts"
+    "alai:v4-core": "tsx scripts/alai-v4-core-cycle.ts",
+    "alai:v5-curriculum-impact": "tsx scripts/alai-v5-curriculum-impact-engine.ts",
+    "alai:v5-domain-impact-audit": "tsx scripts/alai-v5-domain-impact-audit.ts",
+    "alai:v5-full-impact-cycle": "tsx scripts/alai-v5-full-impact-cycle.ts",
+    "alai:ratings": "tsx scripts/alai-ratings.ts"
   },
   "keywords": [],
   "author": "",
