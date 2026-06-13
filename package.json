@@ -402,7 +402,9 @@
     "alai:v7-answer": "tsx scripts/alai-v7-semantic-subgraph-answer.ts",
     "alai:v7-entity-linker": "tsx scripts/alai-v7-entity-linker.ts",
     "alai:v8-chat-grounding-repair": "tsx scripts/alai-v8-chat-grounding-repair.ts",
-    "alai:v8-chat-quality-regression": "tsx scripts/alai-v8-chat-quality-regression.ts"
+    "alai:v8-chat-quality-regression": "tsx scripts/alai-v8-chat-quality-regression.ts",
+    "alai:v9-answer": "tsx scripts/alai-v9-retrieval-ranking-engine.ts",
+    "alai:v9-pipeline-regression": "tsx scripts/alai-v9-pipeline-regression.ts"
   },
   "keywords": [],
   "author": "",
