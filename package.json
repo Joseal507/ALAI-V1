@@ -361,7 +361,9 @@
     "alai:answer-synthesis-audit": "tsx scripts/alai-answer-synthesis-audit.ts",
     "alai:curriculum-autonomous-governor": "tsx scripts/alai-curriculum-autonomous-governor.ts",
     "alai:research-auto-closer": "tsx scripts/alai-research-auto-closer.ts",
-    "alai:true-autonomy-readiness": "tsx scripts/alai-true-autonomy-readiness-audit.ts"
+    "alai:true-autonomy-readiness": "tsx scripts/alai-true-autonomy-readiness-audit.ts",
+    "alai:semantic-relation-grounding-v2": "tsx scripts/alai-semantic-relation-grounding-v2.ts",
+    "alai:curriculum-final-readiness-cycle": "tsx scripts/alai-curriculum-final-readiness-cycle.ts"
   },
   "keywords": [],
   "author": "",

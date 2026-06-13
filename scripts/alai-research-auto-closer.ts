@@ -14,6 +14,16 @@ CREATE TABLE IF NOT EXISTS alai_research_auto_closer_runs (
   blocked INTEGER NOT NULL DEFAULT 0,
   status TEXT NOT NULL DEFAULT 'RUNNING'
 );
+
+CREATE TABLE IF NOT EXISTS alai_autonomous_research_closures (
+  id TEXT PRIMARY KEY,
+  question_id TEXT NOT NULL,
+  question_type TEXT NOT NULL,
+  closure_type TEXT NOT NULL,
+  answer TEXT NOT NULL,
+  confidence_score REAL NOT NULL DEFAULT 0.75,
+  created_at TEXT NOT NULL
+);
 `);
 
 const runId = crypto.randomUUID();
@@ -27,53 +37,58 @@ const rows = db.prepare(`
 SELECT id, question, question_type
 FROM alai_research_questions
 WHERE status='OPEN'
-  AND question_type IN (
-    'AUTONOMOUS_RELATION_DISCOVERY',
-    'AUTONOMOUS_MASTERY_DISCOVERY',
-    'WEAK_DOMAIN_DISCOVERY',
-    'CONVERSATION_LEARNING_GAP'
-  )
-LIMIT 500
+LIMIT 1000
 `).all() as any[];
 
 let answered = 0;
 let blocked = 0;
 
-db.exec(`
-CREATE TABLE IF NOT EXISTS alai_question_answers (
-  id TEXT PRIMARY KEY,
-  question_id TEXT,
-  answer TEXT NOT NULL,
-  confidence_score REAL NOT NULL DEFAULT 0.6,
-  created_at TEXT NOT NULL,
-  updated_at TEXT NOT NULL
-);
-`);
-
 for (const q of rows) {
-  const answer =
-    q.question_type === "AUTONOMOUS_RELATION_DISCOVERY"
-      ? "ALAI should discover only relations supported by shared domain, shared topic, evidence overlap, or validated prerequisite/application structure. Weak or cross-domain relations must be rejected by relation court."
-      : q.question_type === "AUTONOMOUS_MASTERY_DISCOVERY"
-        ? "ALAI proves mastery by explaining the concept, applying it to examples, comparing it with related concepts, identifying prerequisites, and passing quality checks without open flags."
-        : q.question_type === "WEAK_DOMAIN_DISCOVERY"
-          ? "ALAI should strengthen weak domains by adding core concepts, evidence, prerequisite relations, examples, and mastery tests, then re-running curriculum rollups."
-          : "ALAI should convert weak conversation answers into research questions, retrieve relevant concepts, improve grounding, and re-evaluate answer quality.";
+  let answer = "";
+  let closureType = "ANSWERED_BY_AUTONOMOUS_POLICY";
+  let confidence = 0.82;
+
+  if (q.question_type === "AUTONOMOUS_RELATION_DISCOVERY") {
+    answer = "Relation discovery should only accept prerequisite, part-of, cause-effect, application, or contrast relations when they share domain, topic, evidence, semantic terms, or validated graph support. Unsupported cross-domain edges must be rejected by relation court.";
+  } else if (q.question_type === "AUTONOMOUS_MASTERY_DISCOVERY") {
+    answer = "Mastery is proven when ALAI can explain, apply, compare, test, connect prerequisites, cite supporting evidence, and pass quality checks without open flags.";
+  } else if (q.question_type === "WEAK_DOMAIN_DISCOVERY") {
+    answer = "Weak domains should be strengthened through curriculum objectives, missing concept discovery, evidence expansion, relation validation, mastery checks, and domain coverage rollups.";
+  } else if (q.question_type === "CONVERSATION_LEARNING_GAP") {
+    answer = "Conversation gaps should create targeted retrieval, relation grounding, answer synthesis, and self-evaluation improvements for future answers.";
+  } else {
+    closureType = "BLOCKED_BY_AUTONOMOUS_POLICY";
+    answer = "This question type is not currently safe to auto-close without external evidence or a specialized resolver.";
+    confidence = 0.55;
+  }
 
   db.prepare(`
-    INSERT INTO alai_question_answers
-    (id, question_id, answer, confidence_score, created_at, updated_at)
-    VALUES (?, ?, ?, 0.82, ?, ?)
-  `).run(crypto.randomUUID(), q.id, answer, now, now);
+    INSERT INTO alai_autonomous_research_closures
+    (id, question_id, question_type, closure_type, answer, confidence_score, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `).run(
+    crypto.randomUUID(),
+    q.id,
+    q.question_type,
+    closureType,
+    answer,
+    confidence,
+    now
+  );
 
   db.prepare(`
     UPDATE alai_research_questions
-    SET status='ANSWERED',
+    SET status=?,
         updated_at=?
     WHERE id=?
-  `).run(now, q.id);
+  `).run(
+    closureType === "BLOCKED_BY_AUTONOMOUS_POLICY" ? "BLOCKED" : "ANSWERED",
+    now,
+    q.id
+  );
 
-  answered++;
+  if (closureType === "BLOCKED_BY_AUTONOMOUS_POLICY") blocked++;
+  else answered++;
 }
 
 db.prepare(`
