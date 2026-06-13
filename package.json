@@ -398,7 +398,8 @@
     "alai:v6-readiness": "tsx scripts/alai-v6-readiness-audit.ts",
     "alai:v6-ratings": "tsx scripts/alai-v6-ratings.ts",
     "alai:v6-core": "tsx scripts/alai-v6-core-cycle.ts",
-    "alai:dashboard": "tsx scripts/alai-live-dashboard.ts"
+    "alai:dashboard": "tsx scripts/alai-live-dashboard.ts",
+    "alai:v7-answer": "tsx scripts/alai-v7-semantic-subgraph-answer.ts"
   },
   "keywords": [],
   "author": "",
