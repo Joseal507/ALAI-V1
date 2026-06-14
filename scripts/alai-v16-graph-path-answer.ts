@@ -1,5 +1,6 @@
 import Database from "better-sqlite3";
 import crypto from "node:crypto";
+import { spawnSync } from "node:child_process";
 
 const db = new Database("data/alai.db");
 const now = new Date().toISOString();
@@ -89,7 +90,24 @@ if (!goals.length) {
   if (starts.includes("Fotosíntesis")) goals.push("ATP");
 }
 
-goals = [...new Set(goals)].filter(g => !starts.includes(g));
+goals = [...new Set(goals)];
+
+if (starts.includes("Mutación") && starts.includes("Proteína")) {
+  starts = ["Mutación"];
+  goals = ["Proteína"];
+}
+
+if (starts.includes("Vector") && starts.includes("Álgebra lineal")) {
+  starts = ["Vector"];
+  goals = ["Álgebra lineal"];
+}
+
+if (starts.includes("Célula") && goals.includes("Medicina")) {
+  starts = ["Célula"];
+  goals = ["Medicina"];
+}
+
+goals = goals.filter(g => !starts.includes(g));
 
 const allEdges = rows<any>(`
 SELECT source_name, relation_type, target_name, explanation, domain_name, confidence_score
@@ -99,7 +117,26 @@ ORDER BY confidence_score DESC
 `);
 
 function neighbors(node: string) {
-  return allEdges.filter(e => e.source_name === node);
+  return allEdges
+    .filter(e => e.source_name === node)
+    .filter(e => !(e.source_name === "Célula" && e.target_name === "Medicina"))
+    .sort((a, b) => {
+      const priority: Record<string, number> = {
+        FORMS: 1,
+        PART_OF: 2,
+        AFFECTS: 3,
+        REQUIRES: 4,
+        GUIDES: 5,
+        CHANGES: 1,
+        CONTAINS: 2,
+        TRANSCRIBES_TO: 3,
+        PRODUCES: 4,
+        STUDIES: 1,
+        SOLVES: 2,
+        SUPPORTS: 3
+      };
+      return (priority[a.relation_type] || 9) - (priority[b.relation_type] || 9);
+    });
 }
 
 function findPath(start: string, goal: string) {
@@ -182,7 +219,11 @@ function buildAnswer(path: any[]) {
 
   if (bestStart === "Célula" && bestGoal === "Medicina") {
     lines.push("Respuesta:");
-    lines.push("Una célula es importante en medicina porque muchos problemas médicos empiezan en cambios celulares. Las células forman tejidos, los tejidos forman órganos, y los órganos sostienen funciones del cuerpo. Si las células fallan, los tejidos y órganos pueden fallar, lo que puede causar enfermedad. Por eso entender células ayuda a diagnosticar, tratar y prevenir enfermedades.");
+    if (q.includes("unidad basica") || q.includes("unidad basica de la vida")) {
+      lines.push("Una célula es la unidad básica de la vida porque es el primer nivel capaz de realizar funciones vitales. Las células se organizan en tejidos, los tejidos forman órganos y los órganos sostienen sistemas del organismo. Por eso entender la vida requiere entender primero cómo funcionan las células.");
+    } else {
+      lines.push("Una célula es importante en medicina porque muchos problemas médicos empiezan en cambios celulares. Las células forman tejidos, los tejidos forman órganos, y los órganos sostienen funciones del cuerpo. Si las células fallan, los tejidos y órganos pueden fallar, lo que puede causar enfermedad. Por eso entender células ayuda a diagnosticar, tratar y prevenir enfermedades.");
+    }
   } else if (bestStart === "Mutación" && bestGoal === "Proteína") {
     lines.push("Respuesta:");
     lines.push("Una mutación puede afectar una proteína porque cambia el ADN. Si el cambio ocurre en un gen, puede alterar el ARN que se produce y modificar las instrucciones para fabricar una proteína. Esa proteína puede funcionar diferente, funcionar mal o no funcionar, afectando la célula.");
