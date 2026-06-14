@@ -422,7 +422,9 @@
     "alai:v15-regression": "tsx scripts/alai-v15-priority-regression.ts",
     "alai:v16-core": "tsx scripts/alai-v16-graph-reasoning-core.ts",
     "alai:v16-answer": "tsx scripts/alai-v16-graph-path-answer.ts",
-    "alai:v16-regression": "tsx scripts/alai-v16-regression.ts"
+    "alai:v16-regression": "tsx scripts/alai-v16-regression.ts",
+    "alai:v17-answer": "tsx scripts/alai-v17-path-language-realizer.ts",
+    "alai:v17-regression": "tsx scripts/alai-v17-regression.ts"
   },
   "keywords": [],
   "author": "",
