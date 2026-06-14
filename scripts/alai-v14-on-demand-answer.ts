@@ -173,13 +173,22 @@ function createFallbackAnswer(q: string) {
 }
 
 const first = answerWithV13(question);
+const immediateBeforeDecision = immediateGeneralAnswer(question);
 
 let finalAnswer = first.answer;
 let finalQuality = first.quality;
 let researchTriggered = 0;
 let status = "ANSWERED_FROM_MEMORY";
 
-if (first.quality < 0.75 || first.answer.includes("Todavía no tengo suficientes relaciones claras")) {
+if (immediateBeforeDecision && immediateBeforeDecision.quality >= first.quality) {
+  researchTriggered = first.quality < 0.9 ? 1 : 0;
+  if (researchTriggered) queueUrgentResearch(question);
+  finalAnswer = immediateBeforeDecision.answer;
+  finalQuality = immediateBeforeDecision.quality;
+  status = researchTriggered
+    ? "ANSWERED_IMMEDIATELY_AND_QUEUED_FOR_LEARNING"
+    : "ANSWERED_IMMEDIATELY";
+} else if (first.quality < 0.75 || first.answer.includes("Todavía no tengo suficientes relaciones claras")) {
   researchTriggered = 1;
   status = "RESEARCH_TRIGGERED";
 
