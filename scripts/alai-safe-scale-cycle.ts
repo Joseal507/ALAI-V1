@@ -16,7 +16,7 @@ const jobs: [string, number][] = [
   ["alai:episodic-experience", 120000],
 
   ["alai:semantic-relation-grounding-v2", 300000],
-  ["alai:relation-court", 300000],
+  
   ["alai:trace-court", 180000],
   ["alai:path-quality", 180000],
 

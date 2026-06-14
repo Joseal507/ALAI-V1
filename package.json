@@ -438,7 +438,12 @@
     "alai:v21-regression": "tsx scripts/alai-v21-regression.ts",
     "alai:safe-job": "tsx scripts/alai-safe-job-runner.ts",
     "alai:safe-scale-cycle": "tsx scripts/alai-safe-scale-cycle.ts",
-    "alai:v21-fast-regression": "tsx scripts/alai-v21-fast-regression.ts"
+    "alai:v21-fast-regression": "tsx scripts/alai-v21-fast-regression.ts",
+    "alai:scale-metrics": "tsx scripts/alai-scale-learning-metrics.ts",
+    "alai:v22-compound-regression": "tsx scripts/alai-v22-compound-entity-regression.ts",
+    "alai:v23-research-audit": "tsx scripts/alai-v23-research-audit.ts",
+    "alai:v24-specific-answer": "tsx scripts/alai-v24-specific-answer-engine.ts",
+    "alai:v24-answer-regression": "tsx scripts/alai-v24-answer-regression.ts"
   },
   "keywords": [],
   "author": "",

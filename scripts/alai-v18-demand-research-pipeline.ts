@@ -108,7 +108,6 @@ if (weakAnswer(first)) {
     "alai:v16-core",
     "alai:v12-bridges",
     "alai:semantic-relation-grounding-v2",
-    "alai:relation-court",
     "alai:trace-court",
     "alai:path-quality"
   ];
