@@ -430,7 +430,9 @@
     "alai:v18-answer": "tsx scripts/alai-v18-demand-research-pipeline.ts",
     "alai:v18-regression": "tsx scripts/alai-v18-demand-regression.ts",
     "alai:v19-answer": "tsx scripts/alai-v19-question-understanding-router.ts",
-    "alai:v19-regression": "tsx scripts/alai-v19-router-regression.ts"
+    "alai:v19-regression": "tsx scripts/alai-v19-router-regression.ts",
+    "alai:v20-answer": "tsx scripts/alai-v20-research-to-answer-closure.ts",
+    "alai:v20-regression": "tsx scripts/alai-v20-closure-regression.ts"
   },
   "keywords": [],
   "author": "",
