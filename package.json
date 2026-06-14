@@ -426,7 +426,9 @@
     "alai:v17-answer": "tsx scripts/alai-v17-path-language-realizer.ts",
     "alai:v17-regression": "tsx scripts/alai-v17-regression.ts",
     "alai:final-scale-readiness": "tsx scripts/alai-final-scale-readiness.ts",
-    "alai:scale-learning-loop": "tsx scripts/alai-scale-learning-loop.ts"
+    "alai:scale-learning-loop": "tsx scripts/alai-scale-learning-loop.ts",
+    "alai:v18-answer": "tsx scripts/alai-v18-demand-research-pipeline.ts",
+    "alai:v18-regression": "tsx scripts/alai-v18-demand-regression.ts"
   },
   "keywords": [],
   "author": "",
