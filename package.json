@@ -417,7 +417,9 @@
     "alai:v14-answer": "tsx scripts/alai-v14-on-demand-answer.ts",
     "alai:v14-regression": "tsx scripts/alai-v14-on-demand-regression.ts",
     "alai:v14-real-time-regression": "tsx scripts/alai-v14-real-time-regression.ts",
-    "alai:final-chat-quality": "tsx scripts/alai-final-chat-quality-suite.ts"
+    "alai:final-chat-quality": "tsx scripts/alai-final-chat-quality-suite.ts",
+    "alai:v15-answer": "tsx scripts/alai-v15-priority-question-brain.ts",
+    "alai:v15-regression": "tsx scripts/alai-v15-priority-regression.ts"
   },
   "keywords": [],
   "author": "",
