@@ -1,7 +1,18 @@
 #!/bin/zsh
 
 cd /Users/joseal/AdvanceLogicStudios/alai-brain || exit 1
-mkdir -p logs/scale-feeding
+
+mkdir -p logs/scale-feeding locks
+
+if [ -f locks/alai-scale-feeding.pid ]; then
+  OLD_PID=$(cat locks/alai-scale-feeding.pid)
+  if ps -p "$OLD_PID" > /dev/null 2>&1; then
+    echo "ALAI scale feeding already running with PID $OLD_PID"
+    exit 0
+  fi
+fi
+
+echo $$ > locks/alai-scale-feeding.pid
 
 caffeinate -dimsu bash -c '
 while true
@@ -9,33 +20,11 @@ do
   echo ""
   echo "======================================"
   date
-  echo "ALAI FINAL SCALE FEEDING LOOP"
-  echo "Research -> Extract -> Concepts -> Relations -> Beliefs -> Graph -> Answer"
+  echo "ALAI SAFE SCALE FEEDING GOVERNED LOOP"
+  echo "NO DUPLICATES / NO INLINE PROCESS EXPLOSION"
   echo "======================================"
 
-  npm run alai:v20-regression || true
-  npm run alai:v19-regression || true
-  npm run alai:v17-regression || true
-  npm run alai:v16-core || true
-  npm run alai:v12-bridges || true
-
-  npm run alai:research-executor || true
-  npm run alai:research-auto-closer || true
-  npm run alai:research-gap-closer || true
-
-  npm run alai:cognitive-debt-governor || true
-  npm run alai:pending-promotion-v2 || true
-  npm run alai:belief-system || true
-  npm run alai:belief-revision || true
-  npm run alai:episodic-experience || true
-
-  npm run alai:semantic-relation-grounding-v2 || true
-  npm run alai:relation-court || true
-  npm run alai:trace-court || true
-  npm run alai:path-quality || true
-
-  npm run alai:final-scale-readiness || true
-  npm run model:health || true
+  npm run alai:safe-scale-cycle || true
 
   echo ""
   echo "CYCLE COMPLETE. SLEEPING 120 SECONDS."

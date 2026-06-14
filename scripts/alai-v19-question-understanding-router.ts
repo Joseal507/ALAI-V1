@@ -164,22 +164,9 @@ function safePriorityAnswer() {
 function researchThenRetry() {
   queueResearch("No safe matching graph path for question entities.");
 
-  const steps = [
-    "alai:research-executor",
-    "alai:research-auto-closer",
-    "alai:research-gap-closer",
-    "alai:cognitive-debt-governor",
-    "alai:pending-promotion-v2",
-    "alai:belief-system",
-    "alai:belief-revision",
-    "alai:v16-core",
-    "alai:v12-bridges",
-    "alai:semantic-relation-grounding-v2",
-    "alai:relation-court",
-    "alai:trace-court",
-    "alai:path-quality"
-  ];
-
+  // Do not run heavy learning inline inside user answers.
+  // V19 only queues research. The scale-feeding worker closes it safely.
+  const steps: string[] = [];
   for (const step of steps) run(step, undefined, 240000);
 }
 

@@ -87,22 +87,9 @@ function answerV19(q: string) {
 }
 
 function closeResearchIntoGraph() {
-  const steps = [
-    "alai:research-executor",
-    "alai:research-auto-closer",
-    "alai:research-gap-closer",
-    "alai:cognitive-debt-governor",
-    "alai:pending-promotion-v2",
-    "alai:belief-system",
-    "alai:belief-revision",
-    "alai:v16-core",
-    "alai:v12-bridges",
-    "alai:semantic-relation-grounding-v2",
-    "alai:relation-court",
-    "alai:trace-court",
-    "alai:path-quality"
-  ];
-
+  // Do not run heavy learning inline inside user answers.
+  // V20 queues the question. The safe scale-feeding loop performs closure.
+  const steps: string[] = [];
   for (const step of steps) {
     run(step, undefined, 300000);
   }
