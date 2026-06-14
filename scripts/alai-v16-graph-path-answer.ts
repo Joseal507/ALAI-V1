@@ -207,7 +207,9 @@ function relationPhrase(e: any) {
 function buildAnswer(path: any[]) {
   const lines: string[] = [];
 
-  lines.push(`ALAI encontró una ruta de razonamiento: ${bestStart} → ${path.map(e => e.target_name).join(" → ")}.`);
+  const route = `${bestStart} → ${path.map(e => e.target_name).join(" → ")}`;
+
+  lines.push(`ALAI encontró una ruta de razonamiento: ${route}.`);
   lines.push("");
 
   lines.push("Paso a paso:");
@@ -216,24 +218,21 @@ function buildAnswer(path: any[]) {
   });
 
   lines.push("");
+  lines.push("Respuesta:");
 
-  if (bestStart === "Célula" && bestGoal === "Medicina") {
-    lines.push("Respuesta:");
-    if (q.includes("unidad basica") || q.includes("unidad basica de la vida")) {
-      lines.push("Una célula es la unidad básica de la vida porque es el primer nivel capaz de realizar funciones vitales. Las células se organizan en tejidos, los tejidos forman órganos y los órganos sostienen sistemas del organismo. Por eso entender la vida requiere entender primero cómo funcionan las células.");
-    } else {
-      lines.push("Una célula es importante en medicina porque muchos problemas médicos empiezan en cambios celulares. Las células forman tejidos, los tejidos forman órganos, y los órganos sostienen funciones del cuerpo. Si las células fallan, los tejidos y órganos pueden fallar, lo que puede causar enfermedad. Por eso entender células ayuda a diagnosticar, tratar y prevenir enfermedades.");
-    }
-  } else if (bestStart === "Mutación" && bestGoal === "Proteína") {
-    lines.push("Respuesta:");
-    lines.push("Una mutación puede afectar una proteína porque cambia el ADN. Si el cambio ocurre en un gen, puede alterar el ARN que se produce y modificar las instrucciones para fabricar una proteína. Esa proteína puede funcionar diferente, funcionar mal o no funcionar, afectando la célula.");
-  } else if (bestStart === "Vector" && bestGoal === "Álgebra lineal") {
-    lines.push("Respuesta:");
-    lines.push("Los vectores son parte central del álgebra lineal. El álgebra lineal los usa para estudiar espacios, matrices, transformaciones y sistemas de ecuaciones. Por eso los vectores son una base para representar datos, movimiento y modelos matemáticos.");
-  } else {
-    lines.push("Respuesta:");
-    lines.push("La explicación se obtiene siguiendo la cadena anterior: cada concepto conecta con el siguiente y permite construir una respuesta basada en relaciones, no en una frase aislada.");
-  }
+  const first = path[0];
+  const last = path[path.length - 1];
+
+  const intro = `${bestStart} se relaciona con ${bestGoal} porque existe una cadena de conceptos conectados entre ambos.`;
+  const chainExplanation = path
+    .map((e) => e.explanation)
+    .join(" ");
+
+  const conclusion = `En resumen: ${bestStart} importa para entender ${bestGoal} porque cada paso de la cadena conecta una función, estructura o consecuencia con la siguiente.`;
+
+  lines.push(intro);
+  lines.push(chainExplanation);
+  lines.push(conclusion);
 
   return lines.join("\n");
 }
