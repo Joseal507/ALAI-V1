@@ -3,7 +3,8 @@ import Database from "better-sqlite3";
 
 const startedAt = Date.now();
 const sessionMinutes = Number(process.env.ALAI_SESSION_MINUTES || 15);
-const sleepSeconds = Number(process.env.ALAI_SLEEP_SECONDS || 120);
+const sleepSeconds = Number(process.env.ALAI_SLEEP_SECONDS || 30);
+const maxCycles = Number(process.env.ALAI_MAX_CYCLES || 1);
 const sessionMs = sessionMinutes * 60 * 1000;
 
 type CommandPlan = {
@@ -13,36 +14,45 @@ type CommandPlan = {
 };
 
 const commands: CommandPlan[] = [
-  { command: "npm run alai:research-v2", critical: false, timeoutMs: 90_000 },
-  { command: "npm run alai:knowledge-expand", critical: false, timeoutMs: 90_000 },
-  { command: "npm run alai:evidence-backfill", critical: false, timeoutMs: 90_000 },
-  { command: "npm run alai:core-relations", critical: false, timeoutMs: 90_000 },
-  { command: "npm run alai:competency", critical: false, timeoutMs: 120_000 },
-  { command: "npm run alai:repair-competency-status", critical: false, timeoutMs: 90_000 },
-  { command: "npm run alai:promotion-v5", critical: false, timeoutMs: 90_000 },
-  { command: "npm run alai:question-concept-cleaner", critical: false, timeoutMs: 90_000 },
-  { command: "npm run alai:quality-flag-cleaner", critical: false, timeoutMs: 90_000 },
-  { command: "npm run alai:objective-3-final-audit", critical: true, timeoutMs: 90_000 },
-  { command: "npm run model:health", critical: true, timeoutMs: 90_000 },
+  { command: "npm run alai:v24-answer-regression", critical: true, timeoutMs: 240_000 },
+  { command: "npm run alai:v27-research-regression", critical: true, timeoutMs: 180_000 },
+
+  { command: "npm run alai:research-executor", critical: false, timeoutMs: 300_000 },
+  { command: "npm run alai:research-auto-closer", critical: false, timeoutMs: 180_000 },
+  { command: "npm run alai:research-gap-closer", critical: false, timeoutMs: 180_000 },
+
+  { command: "npm run alai:cognitive-debt-governor", critical: false, timeoutMs: 180_000 },
+  { command: "npm run alai:pending-promotion-v2", critical: false, timeoutMs: 180_000 },
+  { command: "npm run alai:belief-system", critical: false, timeoutMs: 180_000 },
+  { command: "npm run alai:belief-revision", critical: false, timeoutMs: 180_000 },
+  { command: "npm run alai:episodic-experience", critical: false, timeoutMs: 120_000 },
+
+  { command: "npm run alai:semantic-relation-grounding-v2", critical: false, timeoutMs: 300_000 },
+  { command: "npm run alai:trace-court", critical: false, timeoutMs: 180_000 },
+  { command: "npm run alai:path-quality", critical: false, timeoutMs: 180_000 },
+
+  { command: "npm run alai:final-scale-readiness", critical: true, timeoutMs: 240_000 },
+  { command: "npm run model:health", critical: true, timeoutMs: 120_000 },
+  { command: "npm run alai:scale-metrics", critical: false, timeoutMs: 120_000 },
 ];
 
 function snapshot(label: string) {
   const db = new Database("data/alai.db");
   const row = db.prepare(`
     SELECT
-      (SELECT COUNT(*) FROM concepts WHERE status IN ('VERIFIED','CANONICAL')) AS trusted,
-      (SELECT COUNT(*) FROM concepts WHERE status!='REJECTED') AS active,
-      ROUND(
-        CAST((SELECT COUNT(*) FROM concepts WHERE status IN ('VERIFIED','CANONICAL')) AS REAL) /
-        MAX(1,(SELECT COUNT(*) FROM concepts WHERE status!='REJECTED')),
-        3
-      ) AS trustedRatio,
+      (SELECT COUNT(*) FROM concepts) AS concepts,
       (SELECT COUNT(*) FROM concepts WHERE status='CANONICAL') AS canonical,
       (SELECT COUNT(*) FROM concepts WHERE status='VERIFIED') AS verified,
       (SELECT COUNT(*) FROM concepts WHERE status='PENDING') AS pending,
-      (SELECT COUNT(*) FROM alai_quality_flags WHERE status='OPEN') AS openFlags,
-      (SELECT COUNT(*) FROM concept_evidence_links) AS evidence,
-      (SELECT COUNT(*) FROM relations) AS relations
+      (SELECT COUNT(*) FROM concepts WHERE status='REJECTED') AS rejected,
+      (SELECT COUNT(*) FROM evidence) AS evidence,
+      (SELECT COUNT(*) FROM concept_evidence_links) AS evidenceLinks,
+      (SELECT COUNT(*) FROM relations) AS relations,
+      (SELECT COUNT(*) FROM alai_research_questions WHERE status='OPEN') AS researchOpen,
+      (SELECT COUNT(*) FROM alai_research_questions WHERE status='ANSWERED') AS researchAnswered,
+      (SELECT COUNT(*) FROM alai_research_questions WHERE status='BLOCKED') AS researchBlocked,
+      (SELECT COUNT(*) FROM knowledge_gaps WHERE status='OPEN') AS gapsOpen,
+      (SELECT COUNT(*) FROM knowledge_gaps WHERE status='RESOLVED') AS gapsResolved
   `).get();
 
   console.log(`\n========== ${label} SNAPSHOT ==========`);
@@ -73,31 +83,28 @@ function run(command: string, timeoutMs: number): boolean {
 }
 
 function sleep(seconds: number) {
-  console.log(`\n========== SLEEP ${seconds}s BEFORE EXIT ==========`);
-
-  const remainingMs = Math.max(0, sessionMs + seconds * 1000 - (Date.now() - startedAt));
-  const safeSleepSeconds = Math.min(seconds, Math.floor(remainingMs / 1000));
-
+  const safeSleepSeconds = Math.max(0, Math.min(seconds, 60));
   if (safeSleepSeconds > 0) {
+    console.log(`\n========== SLEEP ${safeSleepSeconds}s BEFORE EXIT ==========`);
     spawnSync(`sleep ${safeSleepSeconds}`, { shell: true, stdio: "inherit" });
   }
 }
 
 async function main() {
-  console.log("ALAI GitHub DAY single-cycle learning started.");
+  console.log("ALAI GitHub DAY governed learning started.");
   console.log({
     sessionMinutes,
     sleepSeconds,
+    maxCycles,
     startedAt: new Date(startedAt).toISOString(),
   });
 
   snapshot("BEFORE");
 
-  let cycle = 0;
+  for (let cycle = 1; cycle <= maxCycles; cycle++) {
+    if (Date.now() - startedAt >= sessionMs) break;
 
-  while (Date.now() - startedAt < sessionMs) {
-    cycle++;
-    console.log(`\n========== DAY INNER CYCLE ${cycle} ==========`);
+    console.log(`\n========== DAY GOVERNED CYCLE ${cycle}/${maxCycles} ==========`);
 
     for (const item of commands) {
       if (Date.now() - startedAt >= sessionMs) {
@@ -122,7 +129,7 @@ async function main() {
   sleep(sleepSeconds);
   snapshot("FINAL");
 
-  console.log("ALAI GitHub DAY single-cycle learning finished.");
+  console.log("ALAI GitHub DAY governed learning finished.");
 }
 
 main().catch((error) => {

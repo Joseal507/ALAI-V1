@@ -14,19 +14,17 @@ on:
 
   schedule:
     # Panama UTC-5.
-    # 6:00 AM - 9:00 PM Panama.
-    # GitHub starts a new run every 20 minutes.
-    # Each run learns for ~15 minutes, sleeps 2 minutes, then exits.
+    # 6:00 AM - 9:00 PM Panama = 11:00-23:59 UTC and 00:00-02:00 UTC.
+    # GitHub scheduled runs every 20 minutes.
     - cron: "0,20,40 11-23 * * *"
     - cron: "0,20,40 0-2 * * *"
 
 permissions:
   contents: write
-  actions: write
 
 concurrency:
-  group: alai-hybrid-autonomous-learning
-  cancel-in-progress: false
+  group: alai-hybrid-autonomous-learning-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   learn:
@@ -35,7 +33,7 @@ jobs:
 
     env:
       ALAI_SESSION_MINUTES: ${{ github.event.inputs.session_minutes || '15' }}
-      ALAI_SLEEP_SECONDS: "120"
+      ALAI_SLEEP_SECONDS: "30"
       ALAI_MAX_CYCLES: ${{ github.event.inputs.max_cycles || '1' }}
 
       GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
@@ -52,52 +50,30 @@ jobs:
       GEMINI_API_KEY_3: ${{ secrets.GEMINI_API_KEY_3 }}
       GEMINI_API_KEY_4: ${{ secrets.GEMINI_API_KEY_4 }}
       GEMINI_API_KEY_TEST: ${{ secrets.GEMINI_API_KEY_TEST }}
-      GEMINI_PREMIUM_KEY: ${{ secrets.GEMINI_PREMIUM_KEY }}
       GEMINI_MODEL: ${{ secrets.GEMINI_MODEL }}
       GEMINI_DISABLED: ${{ secrets.GEMINI_DISABLED }}
 
       CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
-      CEREBRAS_API_KEY_2: ${{ secrets.CEREBRAS_API_KEY_2 }}
-      CEREBRAS_API_KEY_3: ${{ secrets.CEREBRAS_API_KEY_3 }}
-      CEREBRAS_API_KEY_4: ${{ secrets.CEREBRAS_API_KEY_4 }}
-      CEREBRAS_API_KEY_5: ${{ secrets.CEREBRAS_API_KEY_5 }}
       CEREBRAS_MODEL: ${{ secrets.CEREBRAS_MODEL }}
 
       HF_API_KEY: ${{ secrets.HF_API_KEY }}
-      HF_API_KEY_2: ${{ secrets.HF_API_KEY_2 }}
-      HF_API_KEY_3: ${{ secrets.HF_API_KEY_3 }}
-      HF_API_KEY_4: ${{ secrets.HF_API_KEY_4 }}
-      HF_API_KEY_5: ${{ secrets.HF_API_KEY_5 }}
-      HF_API_KEY_TEST: ${{ secrets.HF_API_KEY_TEST }}
       HF_MODEL: ${{ secrets.HF_MODEL }}
       HF_DISABLED: ${{ secrets.HF_DISABLED }}
 
       SAMBANOVA_API_KEY: ${{ secrets.SAMBANOVA_API_KEY }}
-      SAMBANOVA_API_KEY_2: ${{ secrets.SAMBANOVA_API_KEY_2 }}
-      SAMBANOVA_API_KEY_3: ${{ secrets.SAMBANOVA_API_KEY_3 }}
-      SAMBANOVA_API_KEY_4: ${{ secrets.SAMBANOVA_API_KEY_4 }}
-      SAMBANOVA_API_KEY_5: ${{ secrets.SAMBANOVA_API_KEY_5 }}
-      SAMBANOVA_API_KEY_TEST: ${{ secrets.SAMBANOVA_API_KEY_TEST }}
       SAMBANOVA_MODEL: ${{ secrets.SAMBANOVA_MODEL }}
       SAMBANOVA_DISABLED: ${{ secrets.SAMBANOVA_DISABLED }}
 
       MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
       MISTRAL_MODEL: ${{ secrets.MISTRAL_MODEL }}
 
-      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_DAILY_BACKUP: ${{ secrets.CLOUDFLARE_DAILY_BACKUP }}
       CLOUDFLARE_MODEL: ${{ secrets.CLOUDFLARE_MODEL }}
 
       GITHUB_MODELS_API_KEY: ${{ secrets.JIT }}
       GITHUB_MODELS_API_KEY_2: ${{ secrets.JIT2 }}
       GITHUB_MODELS_API_KEY_3: ${{ secrets.JIT3 }}
-      GITHUB_MODELS_API_KEY_4: ${{ secrets.JIT4 }}
-      GITHUB_MODELS_API_KEY_5: ${{ secrets.JIT5 }}
-      GITHUB_MODELS_API_KEY_6: ${{ secrets.JIT6 }}
       GITHUB_MODELS_MODEL: ${{ secrets.JIT_MODEL }}
 
     steps:
@@ -116,22 +92,22 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Restore ALAI seed database
+      - name: Verify persistent ALAI database exists
         run: |
-          if [ -f data/alai.seed.db.gz ]; then
-            gunzip -c data/alai.seed.db.gz > data/alai.db
-          fi
+          test -f data/alai.db
+          ls -lh data/alai.db
 
       - name: Typecheck
         run: npm run typecheck
 
-      - name: Run governed ALAI hybrid learning loop
+      - name: Run governed ALAI GitHub day loop
         run: npm run alai:github-day-loop
 
       - name: Verify ALAI health before commit
         run: |
-          npm run alai:objective-3-final-audit
-          npm run alai:real-rating
+          npm run alai:v24-answer-regression
+          npm run alai:v27-research-regression
+          npm run alai:scale-metrics
           npm run model:health
 
       - name: Commit learned ALAI state
@@ -147,20 +123,4 @@ jobs:
             git commit -m "ALAI hybrid autonomous learning update"
             git pull --rebase origin "${GITHUB_REF_NAME}"
             git push origin "HEAD:${GITHUB_REF_NAME}"
-          fi
-
-      - name: Trigger next daytime ALAI run
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          PANAMA_HOUR=$(TZ=America/Panama date +%H)
-          PANAMA_MINUTE=$(TZ=America/Panama date +%M)
-
-          echo "Panama time: ${PANAMA_HOUR}:${PANAMA_MINUTE}"
-
-          if [ "$PANAMA_HOUR" -ge 6 ] && [ "$PANAMA_HOUR" -lt 21 ]; then
-            echo "Inside daytime window. Triggering next ALAI run."
-            gh workflow run alai-autonomous-learning.yml               --ref "${GITHUB_REF_NAME}"               -f session_minutes=15               -f max_cycles=1
-          else
-            echo "Outside daytime window. Not triggering next run."
           fi
