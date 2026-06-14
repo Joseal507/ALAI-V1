@@ -443,7 +443,8 @@
     "alai:v22-compound-regression": "tsx scripts/alai-v22-compound-entity-regression.ts",
     "alai:v23-research-audit": "tsx scripts/alai-v23-research-audit.ts",
     "alai:v24-specific-answer": "tsx scripts/alai-v24-specific-answer-engine.ts",
-    "alai:v24-answer-regression": "tsx scripts/alai-v24-answer-regression.ts"
+    "alai:v24-answer-regression": "tsx scripts/alai-v24-answer-regression.ts",
+    "alai:v27-research-regression": "tsx scripts/alai-v27-research-regression.ts"
   },
   "keywords": [],
   "author": "",
