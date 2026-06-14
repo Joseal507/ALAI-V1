@@ -9,10 +9,10 @@ do
   echo ""
   echo "======================================"
   date
-  echo "ALAI SCALE FEEDING + DEMAND PIPELINE LOOP"
+  echo "ALAI SCALE FEEDING + SAFE QUESTION ROUTER"
   echo "======================================"
 
-  npm run alai:v18-regression || true
+  npm run alai:v19-regression || true
   npm run alai:v17-regression || true
   npm run alai:v16-core || true
   npm run alai:v12-bridges || true
@@ -31,10 +31,7 @@ do
   npm run alai:final-scale-readiness || true
   npm run model:health || true
 
-  echo ""
   echo "CYCLE COMPLETE. SLEEPING 120 SECONDS."
-  echo ""
-
   sleep 120
 done
 '
