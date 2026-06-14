@@ -126,7 +126,7 @@ function stats() {
 function chat(question: string) {
   const result = spawnSync(
     "npm",
-    ["run", "alai:v15-answer", "--", question],
+    ["run", "alai:v16-answer", "--", question],
     { encoding: "utf8", timeout: 45000 }
   );
 
